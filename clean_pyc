@@ -1,0 +1,6 @@
+# A short script to clean all pycs in SL_multipatch
+# run it using ./clean_pyc
+
+find .. -name '*.pyc' -delete
+find .. -name '*.*~' -delete
+find .. -name '#*.*#' -delete
