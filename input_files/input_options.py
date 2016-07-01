@@ -11,6 +11,7 @@ CIRCLE_1p_domain        = 1 # circle domain (1 patch)
 DISK_5p_domain          = 2 # crown (4 patches) + internal disk  ( = 5 patches)
 PINCHEDDISK_5p_domain   = 3 # pinched 5 patch disk (5 patches, no singular points)
 SQUARE_4p_domain        = 4 # 2 squares domain (2 patches, C1)
+ANNULUS_4p_domain       = 5 # annulus divided in 4 patches (like the disk_5p but without interior patch)
 
 # Discretization:
 NPTS1 = 24 # Number of points along x

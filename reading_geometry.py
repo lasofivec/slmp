@@ -25,9 +25,9 @@ def get_geometry(domain):
         import caid.cad_geometry as cg
         geo = cg.cad_geometry(ls_domain)
     elif (domain == 5) :
-        from caid.cad_geometry import square
-        geo = square(n=[32,32], p=[3,3])
-        geo.translate([0.,1.])
+        ls_domain = "../domains/annulus.xml"
+        import caid.cad_geometry as cg
+        geo = cg.cad_geometry(ls_domain)
     else:
         raise SystemExit("ERROR in globals_variables:" \
                          + " no domain associated to that number")

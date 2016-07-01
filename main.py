@@ -116,14 +116,12 @@ if (which_advec == 2) :
 zn   = np.zeros((npatchs, NPTS1, NPTS2))
 znp1 = np.zeros((npatchs, NPTS1, NPTS2))
 zn   = np.copy(z).reshape((npatchs, NPTS1, NPTS2))
-#************* selalib_interpol.so *****************
 
 
 # Plotting the initial state ***************************
 plot_nrb_dens(X_mat, Y_mat, zn, func_formula, \
                show=True, save=True, tstep = -1)
 # ******************************************************
-
 
 # Computing the characteristics' origin
 char_eta1, char_eta2, where_char = get_pat_char(geo, eta1, eta2, advec, dt)
@@ -132,7 +130,6 @@ print where_char[0]
 print where_char[1]
 print where_char[2]
 print where_char[3]
-print where_char[4]
 
 # Extracting the particles that stay in their own domain:
 char_eta1_id = np.copy(char_eta1)
