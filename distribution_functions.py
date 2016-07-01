@@ -1,7 +1,7 @@
 import numpy as np
 from numpy import pi
-from globals_variables import center_adv_x
-from globals_variables import center_adv_y
+from globals_variables import dist_center_x
+from globals_variables import dist_center_y
 
 def initialize_distribution(name):
     """ Initializes distribution function, with type defined in name.
@@ -12,8 +12,8 @@ def initialize_distribution(name):
         func_init = lambda x,y : constant_distribution(x,y)
     elif (name == "GAUSSIAN_DISTRIBUTION") :
         func_init = lambda x,y : gaussian_pulse(x, y, \
-                                                xc=center_adv_x, \
-                                                yc=center_adv_y, \
+                                                xc=dist_center_x, \
+                                                yc=dist_center_y, \
                                                 sig = 0.04, \
                                                 max = 1.0)
     elif (name == "SINUSOIDAL_WAVES") :
