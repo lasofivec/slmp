@@ -126,10 +126,19 @@ plot_nrb_dens(X_mat, Y_mat, zn, func_formula, \
 # Computing the characteristics' origin
 char_eta1, char_eta2, where_char = get_pat_char(geo, eta1, eta2, advec, dt)
 
-print where_char[0]
-print where_char[1]
-print where_char[2]
-print where_char[3]
+if DEBUG_MODE:
+    print "................ X ..............."
+    print X_mat[0]
+    print "................ Y ..............."
+    print Y_mat[0]
+    print "................ E1 ..............."
+    print char_eta1[0]
+    print "................ E2 ..............."
+    print char_eta2[0]
+    print "................ where ............."
+    print where_char[0]
+    print "................ Jac ..............."
+    print jac[0]
 
 # Extracting the particles that stay in their own domain:
 char_eta1_id = np.copy(char_eta1)
@@ -187,7 +196,6 @@ for tstep in range(1,nstep+1) :
             ind_eta1 = pat_out_char[0][ind_pt_out]
             ind_eta2 = pat_out_char[1][ind_pt_out]
             npat_char = where_char[npat][ind_eta1, ind_eta2]
-
             znp1[npat, ind_eta1, ind_eta2] = mp_int.f2py_interpolate_value(npat_char,
                                                                     char_eta1[npat, ind_eta1, ind_eta2],
                                                                     char_eta2[npat, ind_eta1, ind_eta2],

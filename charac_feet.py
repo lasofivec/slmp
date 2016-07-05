@@ -84,7 +84,7 @@ def get_pat_char(geo, eta1, eta2, advec, dt):
 
     char_eta1 = np.zeros((npatchs, NPTS1, NPTS2))
     char_eta2 = np.zeros((npatchs, NPTS1, NPTS2))
-    where_char = np.zeros((npatchs, NPTS1, NPTS2))
+    where_char = np.zeros((npatchs, NPTS1, NPTS2), dtype=np.int)
 
     for npat, nrb in enumerate(geo):
         print ""
@@ -127,7 +127,7 @@ def rk4(npat, xn, yn, dt, rhs_func):
     xn_05 = xn - advec_x
     yn_05 = yn - advec_y
     last_advec_percent = np.zeros_like(xn)
-    where_char = np.zeros_like(xn) + npat
+    where_char = np.zeros_like(xn, dtype=np.int) + npat
     contain_particles(xn, yn, [advec_x, advec_y], xn_05, yn_05, where_char, last_advec_percent)
     k2x, k2y = rhs_func(xn_05, yn_05)
 
@@ -136,7 +136,7 @@ def rk4(npat, xn, yn, dt, rhs_func):
     xn_15 = xn - advec_x
     yn_15 = yn - advec_y
     last_advec_percent = np.zeros_like(xn)
-    where_char = np.zeros_like(xn) + npat
+    where_char = np.zeros_like(xn, dtype=np.int) + npat
     contain_particles(xn, yn, [advec_x, advec_y], xn_15, yn_15, where_char, last_advec_percent)
     k3x, k3y = rhs_func(xn_15, yn_15)
 
@@ -145,18 +145,18 @@ def rk4(npat, xn, yn, dt, rhs_func):
     xn_25 = xn - advec_x
     yn_25 = yn - advec_y
     last_advec_percent = np.zeros_like(xn)
-    where_char = np.zeros_like(xn) + npat
+    where_char = np.zeros_like(xn, dtype=np.int) + npat
     contain_particles(xn, yn, [advec_x, advec_y], xn_25, yn_25, where_char, last_advec_percent)
     k4x, k4y = rhs_func(xn_25, yn_25)
 
     advec_x = 0.5 * dt / 3. * (k1x + 2.0 * k2x + 2.0 * k3x + k4x)
     advec_y = 0.5 * dt / 3. * (k1y + 2.0 * k2y + 2.0 * k3y + k4y)
-    print "----advec x = ", advec_x
-    print "----advec y = ", advec_y
+    # print "----advec x = ", advec_x
+    # print "----advec y = ", advec_y
     xnp1 = xn - advec_x
     ynp1 = yn - advec_y
     last_advec_percent = np.zeros_like(xn)
-    where_char = np.zeros_like(xn) + npat
+    where_char = np.zeros_like(xn, dtype=np.int) + npat
     contain_particles(xn, yn, [advec_x, advec_y], xnp1, ynp1, where_char, last_advec_percent)
 
     return xnp1, ynp1, where_char
@@ -229,14 +229,14 @@ def contain_particles(eta1_mat, eta2_mat, advec_coeffs, eta1_orig, eta2_orig, wh
         eta1_orig[where_out] = 0.
         eta2_orig[where_out] = eta2_mat[where_out] - current_percent * advec_coef2[where_out]
 #        print " perct  = ", current_percent
-        print "eta 1   = ", eta1_mat[where_out], eta1_orig[where_out]
-        print "eta 2   = ", eta2_mat[where_out], eta2_orig[where_out]
+        # print "eta 1   = ", eta1_mat[where_out], eta1_orig[where_out]
+        # print "eta 2   = ", eta2_mat[where_out], eta2_orig[where_out]
 #        print "where 1 = ", where_out
 #        print "where 2 = ", where_out2
         # Looking for the neigh. patch and transforming the coord to that patch
         [list_pats, list_faces]= inter.connectivity(where_char[where_out], 1)
-        print "conn pat = ", list_pats
-        print "conn fac = ", list_faces
+        # print "conn pat = ", list_pats
+        # print "conn fac = ", list_faces
         where_orig = where_char[where_out]
         where_char[where_out] = list_pats
         [eta1_out_xmin, eta2_out_xmin] = \
@@ -451,10 +451,10 @@ def derivs_eta(geo, npat, eta1_mat, eta2_mat, advec):
 
     # Getting the jacobian
     [d1F1, d2F1, d1F2, d2F2] = jacobian(geo, npat, eta1_mat, eta2_mat)
-
+    
     # Computing the jacobian determinant
     sqrt_g = d1F1 * d2F2 - d1F2 * d2F1
-    print "++++++ jacobien = ", sqrt_g
+    # print "++++++ jacobien = ", sqrt_g
 
     # Approximating the 0 values of sqrtg to avoid Nans
     # if (np.size(np.where(sqrt_g == 0.)) > 0) :

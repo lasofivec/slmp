@@ -16,7 +16,7 @@ def plot_nrb_dens(X_mat, Y_mat, zn, title = '', show = True, save = False, tstep
         Z = zn[npat]
         listz.append(Z)
         # #TO check the mesh :
-        # pl.scatter(Y,X)
+        # pl.scatter(Y_mat[npat],X_mat[npat])
         # pl.show(block = True)
         # pl.clf()
 

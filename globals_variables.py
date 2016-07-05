@@ -21,6 +21,7 @@ dist_center_y = 0.5
 which_advec = ADVEC_CNST
 which_deriv = DERIV_FDU2
 which_interp = INTER_SLL3
+DEBUG_MODE = False
 # *******************************
 
 
