@@ -147,7 +147,7 @@ for npat in range(npatchs):
     #     YYmat[ii] = D[0,0,0,1]
 
 if DEBUG_MODE:
-    npat = 1
+    npat = 0
     print "................", npat, "................"
     print "................ X ..............."
     print X_mat[npat]#-0.005-XXmat
@@ -159,8 +159,8 @@ if DEBUG_MODE:
     print char_eta2[npat]
     print "................ where ............."
     print where_char[npat]
-    print "................ Jac ..............."
-    print jac[npat]
+    # print "................ Jac ..............."
+    # print jac[npat]
     print "................ X adv (=F1(E1,E2))..............."
     print XXmat[npat]
     print "................ Y adv (=F1(E1,E2))..............."

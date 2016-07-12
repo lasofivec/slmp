@@ -450,26 +450,26 @@ def transform_patch_coordinates(eta_tab, face_tab):
     return [list_eta1, list_eta2]
 
 
-def transform_advection(advec_coef1, advec_coef2, face, list_faces):
-    # to transform A_i (advection in patch i: P_i) to A_j (resp. P_j)
-    # we need to perform the following computation:
-    # J_j * J_i * A_i = A_j
-    # where J_i and J_j are the jacobian matrix of P_i and P_j
-    if np.size(list_faces) == 1:
-        list_faces = [list_faces]
-    for ind in range(np.size(list_faces)):
-        if np.abs(list_faces[ind] - face) == 1:
-            temp = advec_coef1[ind] + 0.
-            advec_coef1[ind] = advec_coef2[ind]
-            advec_coef2[ind] = -temp
-        elif list_faces[ind] == face:
-            print "adv coef 1 =", advec_coef1
-            print "adv coef 2 =", advec_coef2
-            advec_coef1[ind] = -advec_coef1[ind]
-            advec_coef2[ind] = -advec_coef2[ind]
-    return [advec_coef1, advec_coef2]
+# def transform_advection(advec_coef1, advec_coef2, face, list_faces):
+#     # to transform A_i (advection in patch i: P_i) to A_j (resp. P_j)
+#     # we need to perform the following computation:
+#     # J_j * J_i * A_i = A_j
+#     # where J_i and J_j are the jacobian matrix of P_i and P_j
+#     if np.size(list_faces) == 1:
+#         list_faces = [list_faces]
+#     for ind in range(np.size(list_faces)):
+#         if np.abs(list_faces[ind] - face) == 1:
+#             temp = advec_coef1[ind] + 0.
+#             advec_coef1[ind] = advec_coef2[ind]
+#             advec_coef2[ind] = -temp
+#         elif list_faces[ind] == face:
+#             print "adv coef 1 =", advec_coef1
+#             print "adv coef 2 =", advec_coef2
+#             advec_coef1[ind] = -advec_coef1[ind]
+#             advec_coef2[ind] = -advec_coef2[ind]
+#     return [advec_coef1, advec_coef2]
 
-def transform_advection2(advec_coef1, advec_coef2, where_from, where_to, eta1_from, eta2_from, eta1_to, eta2_to):
+def transform_advection(advec_coef1, advec_coef2, where_from, where_to, eta1_from, eta2_from, eta1_to, eta2_to):
     # to transform A_i (advection in patch i: P_i) to A_j (resp. P_j)
     # we need to perform the following computation:
     # J_j * J_i * A_i = A_j

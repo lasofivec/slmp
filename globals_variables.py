@@ -130,6 +130,7 @@ def my_meshgrid(eta1, eta2) :
     return et1.transpose(), et2.transpose()
 
 epsilon = 0.01
+epsilon2 = 10**-14
 
 def jacobian_function(npat, e1, e2):
     d1F1 = np.zeros((NPTS1, NPTS2))

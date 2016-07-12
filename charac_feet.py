@@ -152,8 +152,6 @@ def rk4(npat, xn, yn, dt, rhs_func):
     advec_x = 0.5 * dt / 3. * (k1x + 2.0 * k2x + 2.0 * k3x + k4x)
     advec_y = 0.5 * dt / 3. * (k1y + 2.0 * k2y + 2.0 * k3y + k4y)
     print ",,,,,,,,,,,,,,, last call ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
-    # print "----advec x = ", advec_x
-    # print "----advec y = ", advec_y
     xnp1 = xn - advec_x
     ynp1 = yn - advec_y
     last_advec_percent = np.zeros_like(xn)
@@ -190,6 +188,12 @@ def contain_particles(eta1_mat, eta2_mat, advec_coeffs, eta1_orig, eta2_orig, wh
     # Separating advection:
     [advec_coef1, advec_coef2] = advec_coeffs
 
+    # # Rounding results:
+    eta1_orig[np.where(abs(eta1_orig) < epsilon2)]=0.
+    eta2_orig[np.where(abs(eta2_orig) < epsilon2)]=0.
+    eta1_orig[np.where(abs(1. - eta1_orig) < epsilon2)]=1.
+    eta2_orig[np.where(abs(1. - eta2_orig) < epsilon2)]=1.
+
     if DEBUG_MODE:
         print "---------- eta mat"
         print eta1_mat
@@ -204,29 +208,6 @@ def contain_particles(eta1_mat, eta2_mat, advec_coeffs, eta1_orig, eta2_orig, wh
         print where_char
         print "---------- last percent"
         print last_advec_percent
-        # # computing X,Y:
-        # import numpy
-        # XXmat = numpy.zeros_like(eta1_mat)
-        # YYmat = numpy.zeros_like(eta2_mat)
-        # for ii in range(numpy.shape(eta1_mat)[0]):
-        #     if numpy.shape(numpy.shape(eta1_mat))[0] == 2 :
-        #         for jj in range(numpy.shape(eta1_mat)[1]):
-        #             ee1 = eta1_mat[ii,jj]
-        #             ee2 = eta2_mat[ii,jj]
-        #             nnp = where_char[ii,jj]
-        #             D = geo[nnp].evaluate_deriv(ee1, ee2, nderiv=0)
-        #             XXmat[ii,jj] = D[0,0,0,0]
-        #             YYmat[ii,jj] = D[0,0,0,1]
-        #     else :
-        #         ee1 = eta1_mat[ii]
-        #         ee2 = eta2_mat[ii]
-        #         nnp = where_char[ii]
-        #         D = geo[nnp].evaluate_deriv(ee1, ee2, nderiv=0)
-        #         XXmat[ii] = D[0,0,0,0]
-        #         YYmat[ii] = D[0,0,0,1]
-        # print "---------- XY mat"
-        # print XXmat
-        # print YYmat
         
     # For particles that stay in the domain
     in_indices = np.where((eta1_orig >= 0.) & (eta1_orig <= 1.) & (eta2_orig >= 0.) & (eta2_orig <= 1.))
@@ -234,9 +215,6 @@ def contain_particles(eta1_mat, eta2_mat, advec_coeffs, eta1_orig, eta2_orig, wh
     last_advec_percent[in_indices] = 100
     if (last_advec_percent == 100).all() :
         return
-
-    # print "---------- last percent"
-    # print last_advec_percent
 
     # For particles that go out on the x axis, below 0 :
     where_out = np.where(eta1_orig < 0.)
@@ -254,19 +232,14 @@ def contain_particles(eta1_mat, eta2_mat, advec_coeffs, eta1_orig, eta2_orig, wh
         current_percent = eta1_mat[where_out] / advec_coef1[where_out]
         # ....
         last_advec_percent[where_out] += current_percent
+
         # We compute where the particle stayed
         eta1_orig[where_out] = 0.
         eta2_orig[where_out] = eta2_mat[where_out] - current_percent * advec_coef2[where_out]
-#        print " perct  = ", current_percent
-        # print "eta 1   = ", eta1_mat[where_out], eta1_orig[where_out]
-        # print "eta 2   = ", eta2_mat[where_out], eta2_orig[where_out]
-#        print "where 1 = ", where_out
-#        print "where 2 = ", where_out2
+
         # Looking for the neigh. patch and transforming the coord to that patch
         [list_pats, list_faces]= inter.connectivity(where_char[where_out], 1)
-        # print "conn pat = ", list_pats
-        # print "conn fac = ", list_faces
-
+        
         # We treat external external boundary conditions here, ie when [npat, face] = [npat', face']
         where_not_dirichlet = np.where((where_char[where_out] != list_pats) & (np.asarray(list_faces) != 1))[0]
         if np.shape(where_out)[0]!=1:
@@ -279,20 +252,12 @@ def contain_particles(eta1_mat, eta2_mat, advec_coeffs, eta1_orig, eta2_orig, wh
             where_orig = where_char[where_out]
             list_pats2 = [list_pats[val0] for index0, val0 in enumerate(where_not_dirichlet)]
             where_char[where_out] = list_pats2
+
             [eta1_out_xmin, eta2_out_xmin] = \
                 inter.transform_patch_coordinates(eta2_orig[where_out], list_faces)
-            # print "eta1, eta2 in pat =", eta1_orig[where_out], eta2_orig[where_out]
-            # print "transformed eta2 =", eta1_out_xmin, eta2_out_xmin
-
-            print "beforeeeeeeee = ", advec_coef1[where_out], advec_coef2[where_out]
             
             [advec1, advec2] = \
-                inter.transform_advection2(advec_coef1[where_out], advec_coef2[where_out], where_orig, where_char[where_out], eta1_orig[where_out], eta2_orig[where_out], eta1_out_xmin, eta2_out_xmin)
-
-            print "zzzzzzzzzzzzzzzzzzzzzzzzzzz"
-            # [advec1, advec2] = \
-            #     inter.transform_advection(advec_coef1[where_out], advec_coef2[where_out], 1, list_faces)
-            print "aaaaaaaaaaa = ", advec1, advec2
+                inter.transform_advection(advec_coef1[where_out], advec_coef2[where_out], where_orig, where_char[where_out], eta1_orig[where_out], eta2_orig[where_out], eta1_out_xmin, eta2_out_xmin)
             
             # We get the origin point
             eta1_orig[where_out] = eta1_out_xmin
@@ -320,8 +285,9 @@ def contain_particles(eta1_mat, eta2_mat, advec_coeffs, eta1_orig, eta2_orig, wh
             last_advec_percent[where_out] = this_percent
             if DEBUG_MODE:
                 print "results ========="
-                print "origins of chars: ", eta1_orig[where_out], eta2_orig[where_out]
-                print "in the pats:", where_char[where_out]
+                print "where out =", where_out
+                print "origins of chars: ", eta1_orig, eta2_orig
+                print "in the pats:", where_char
                 print "percent :", this_percent
                 print "advec =", advec1
 
@@ -341,25 +307,32 @@ def contain_particles(eta1_mat, eta2_mat, advec_coeffs, eta1_orig, eta2_orig, wh
         current_percent = (eta1_mat[where_out] - 1.) / advec_coef1[where_out]
         # ....
         last_advec_percent[where_out] += current_percent
+
         # We compute where the particle stayed
         eta1_orig[where_out] = 1.
         eta2_orig[where_out] = eta2_mat[where_out] - current_percent * advec_coef2[where_out]
+
         # Looking for the neighbouring patch and transforming the coordinates to that patch
         [list_pats, list_faces]= inter.connectivity(where_char[where_out], 3)
-        where_orig = where_char[where_out]
-        where_char[where_out] = list_pats
-        [eta1_out_xmin, eta2_out_xmin] = \
-            inter.transform_patch_coordinates(eta2_orig[where_out], list_faces)
-        [advec1, advec2] = \
-            inter.transform_advection(advec_coef1[where_out], advec_coef2[where_out], 3, list_faces)
+
         # We treat external external boundary conditions here, ie when [npat, face] = [npat', face']
-        where_not_dirichlet = np.where( (where_orig != list_pats) & (np.asarray(list_faces) != 3))
+        where_not_dirichlet = np.where((where_char[where_out] != list_pats) & (np.asarray(list_faces) != 3))[0]
         if np.shape(where_out)[0]!=1:
             where_out = [where_out[0][where_not_dirichlet], where_out[1][where_not_dirichlet]]
         else:
             where_out = where_out[0][where_not_dirichlet]
             np.reshape(where_out,(1, np.size(where_out)))
+
         if np.size(where_out) > 0:
+            where_orig = where_char[where_out]
+            list_pats2 = [list_pats[val0] for index0, val0 in enumerate(where_not_dirichlet)]
+            where_char[where_out] = list_pats
+            [eta1_out_xmin, eta2_out_xmin] = \
+                inter.transform_patch_coordinates(eta2_orig[where_out], list_faces)
+
+            [advec1, advec2] = \
+                inter.transform_advection(advec_coef1[where_out], advec_coef2[where_out], where_orig, where_char[where_out], eta1_orig[where_out], eta2_orig[where_out], eta1_out_xmin, eta2_out_xmin)
+
             # We get the origin point
             eta1_orig[where_out] = eta1_out_xmin
             eta2_orig[where_out] = eta2_out_xmin
@@ -396,22 +369,29 @@ def contain_particles(eta1_mat, eta2_mat, advec_coeffs, eta1_orig, eta2_orig, wh
         # We compute where the particle stayed
         eta1_orig[where_out] = eta1_mat[where_out] - current_percent * advec_coef1[where_out]
         eta2_orig[where_out] = 0.
+        
         # Looking for the neighbouring patch and transforming the coordinates to that patch
         [list_pats, list_faces] = inter.connectivity(where_char[where_out], 0)
-        where_orig = where_char[where_out]
-        where_char[where_out] = list_pats
-        [eta1_out_xmin, eta2_out_xmin] = \
-            inter.transform_patch_coordinates(eta1_orig[where_out], list_faces)
-        [advec1, advec2] = \
-            inter.transform_advection(advec_coef1[where_out], advec_coef2[where_out], 0, list_faces)
+
         # We treat external external boundary conditions here, ie when [npat, face] = [npat', face']
-        where_not_dirichlet = np.where((where_orig != list_pats) & (np.asarray(list_faces) != 0))
+        where_not_dirichlet = np.where((where_char[where_out] != list_pats) & (np.asarray(list_faces) != 0))[0]
         if np.shape(where_out)[0]!=1:
             where_out = [where_out[0][where_not_dirichlet], where_out[1][where_not_dirichlet]]
         else:
             where_out = where_out[0][where_not_dirichlet]
             np.reshape(where_out,(1, np.size(where_out)))
+                
         if np.size(where_out) > 0:
+            where_orig = where_char[where_out]
+            list_pats2 = [list_pats[val0] for index0, val0 in enumerate(where_not_dirichlet)]
+            where_char[where_out] = list_pats2
+
+            [eta1_out_xmin, eta2_out_xmin] = \
+                inter.transform_patch_coordinates(eta1_orig[where_out], list_faces)
+
+            [advec1, advec2] = \
+                inter.transform_advection(advec_coef1[where_out], advec_coef2[where_out], where_orig, where_char[where_out], eta1_orig[where_out], eta2_orig[where_out], eta1_out_xmin, eta2_out_xmin)
+
             # We get the origin point
             eta1_orig[where_out] = eta1_out_xmin
             eta2_orig[where_out] = eta2_out_xmin
@@ -437,7 +417,7 @@ def contain_particles(eta1_mat, eta2_mat, advec_coeffs, eta1_orig, eta2_orig, wh
             last_advec_percent[where_out] = this_percent
 
     # For particles that go out on the y axis, above 1 :
-    where_out = np.where(eta2_orig - 1.0 > 10**-14)
+    where_out = np.where(eta2_orig - 1.0 > 0.)
     if np.size(where_out) > 0:
         # We compute the actual percent we could advect from
         current_percent = (eta2_mat[where_out] - 1.) / advec_coef2[where_out]
@@ -445,22 +425,29 @@ def contain_particles(eta1_mat, eta2_mat, advec_coeffs, eta1_orig, eta2_orig, wh
         # We compute where the particle stayed
         eta1_orig[where_out] = eta1_mat[where_out] - current_percent * advec_coef1[where_out]
         eta2_orig[where_out] = 1.
+
         # Looking for the neighbouring patch and transforming the coordinates to that patch
         [list_pats, list_faces] = inter.connectivity(where_char[where_out], 2)
-        where_orig = where_char[where_out]
-        where_char[where_out] = list_pats
-        [eta1_out_xmin, eta2_out_xmin] = \
-            inter.transform_patch_coordinates(eta1_orig[where_out], list_faces)
-        [advec1, advec2] = \
-            inter.transform_advection(advec_coef1[where_out], advec_coef2[where_out], 2, list_faces)
+
         # We treat external external boundary conditions here, ie when [npat, face] = [npat', face']
-        where_not_dirichlet = np.where((where_orig != list_pats) & (np.asarray(list_faces) != 2))
+        where_not_dirichlet = np.where((where_char[where_out] != list_pats) & (np.asarray(list_faces) != 2))[0]
         if np.shape(where_out)[0]!=1:
             where_out = [where_out[0][where_not_dirichlet], where_out[1][where_not_dirichlet]]
         else:
             where_out = where_out[0][where_not_dirichlet]
             np.reshape(where_out,(1, np.size(where_out)))
+
         if np.size(where_out) > 0:
+            where_orig = where_char[where_out]
+            list_pats2 = [list_pats[val0] for index0, val0 in enumerate(where_not_dirichlet)]
+            where_char[where_out] = list_pats2
+
+            [eta1_out_xmin, eta2_out_xmin] = \
+                inter.transform_patch_coordinates(eta1_orig[where_out], list_faces)
+            
+            [advec1, advec2] = \
+                inter.transform_advection(advec_coef1[where_out], advec_coef2[where_out], where_orig, where_char[where_out], eta1_orig[where_out], eta2_orig[where_out], eta1_out_xmin, eta2_out_xmin)
+
             # We get the origin point
             eta1_orig[where_out] = eta1_out_xmin
             eta2_orig[where_out] = eta2_out_xmin
