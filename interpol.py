@@ -25,10 +25,10 @@ if domain == SQUARE_2p_domain:
     geo.external_faces.pop(0)
     geo.external_faces.pop(-2)
 if domain == SQUARE_2p_C0_domain:
-    list_faces_duplicata.append([1,3])
+    list_faces_duplicata.append([1,0])
     list_faces_duplicated.append([0,1])
     geo.external_faces.pop(1)
-    geo.external_faces.pop(-1)
+    geo.external_faces.pop(-3)
 if domain == SQUARE_4p_domain:
     list_faces_duplicata.append([1,3])
     list_faces_duplicated.append([0,1])
@@ -478,6 +478,9 @@ def transform_advection2(advec_coef1, advec_coef2, where_from, where_to, eta1_fr
     size_prbm = np.size(where_from)
 
     if (size_prbm == 1) :
+        a1_temp = advec_coef1
+        a2_temp = advec_coef2
+
         u = eta1_from
         v = eta2_from
         npat = where_from
@@ -487,6 +490,9 @@ def transform_advection2(advec_coef1, advec_coef2, where_from, where_to, eta1_fr
         d1F2 = D[1, :, :, 1][0]
         d2F2 = D[2, :, :, 1][0]
 
+        a1 = d1F1 * a1_temp + d2F1 * a2_temp
+        a2 = d1F2 * a1_temp + d2F2 * a2_temp
+
         u = eta1_to
         v = eta2_to
         npat = where_to
@@ -495,12 +501,10 @@ def transform_advection2(advec_coef1, advec_coef2, where_from, where_to, eta1_fr
         d2G1 = D[2, :, :, 0][0]
         d1G2 = D[1, :, :, 1][0]
         d2G2 = D[2, :, :, 1][0]
-
-        a1 = advec_coef1
-        a2 = advec_coef2
-
-        new_advec1 = (d1G1*d1F1 + d2G1*d1F2)*a1 + (d1G1*d2F1 + d2G1*d2F2)*a2
-        new_advec2 = (d1G2*d1F1 + d2G2*d1F2)*a1 + (d1G2*d2F1 + d2G2*d2F2)*a2
+        sqrt_g = d1G1*d2G2 - d1G2*d2G1
+        
+        new_advec1 = (d2G2 * a1 - d2G1 * a2) / sqrt_g
+        new_advec2 = (d1G1 * a2 - d1G2 * a1) / sqrt_g
 
         return [new_advec1, new_advec2]
     
@@ -508,6 +512,9 @@ def transform_advection2(advec_coef1, advec_coef2, where_from, where_to, eta1_fr
     new_advec2 = np.zeros_like(advec_coef2)
 
     for ind in range(size_prbm):
+        a1_temp = advec_coef1[ind]
+        a2_temp = advec_coef2[ind]
+        
         u = eta1_from[ind]
         v = eta2_from[ind]
         npat = where_from[ind]
@@ -516,6 +523,9 @@ def transform_advection2(advec_coef1, advec_coef2, where_from, where_to, eta1_fr
         d2F1 = D[2, :, :, 0]
         d1F2 = D[1, :, :, 1]
         d2F2 = D[2, :, :, 1]
+        
+        a1 = d1F1 * a1_temp + d2F1 * a2_temp
+        a2 = d1F2 * a1_temp + d2F2 * a2_temp
 
         u = eta1_to[ind]
         v = eta2_to[ind]
@@ -525,15 +535,10 @@ def transform_advection2(advec_coef1, advec_coef2, where_from, where_to, eta1_fr
         d2G1 = D[2, :, :, 0]
         d1G2 = D[1, :, :, 1]
         d2G2 = D[2, :, :, 1]
-
-        # [d1F1, d2F1, d1F2, d2F2] = jacobian(geo, where_from[ind], eta1_from[ind], eta2_from[ind])
-        # [d1G1, d2G1, d1G2, d2G2] = jacobian(geo, where_to[ind], eta1_to[ind], eta2_to[ind])
-
-        a1 = advec_coef1[ind]
-        a2 = advec_coef2[ind]
+        sqrt_g = d1G1*d2G2 - d1G2*d2G1
         
-        new_advec1[ind] = (d1G1*d1F1 + d2G1*d1F2)*a1 + (d1G1*d2F1 + d2G1*d2F2)*a2
-        new_advec2[ind] = (d1G2*d1F1 + d2G2*d1F2)*a1 + (d1G2*d2F1 + d2G2*d2F2)*a2
-        
+        new_advec1[ind] = (d2G2 * a1 - d2G1 * a2) / sqrt_g
+        new_advec2[ind] = (d1G1 * a2 - d1G2 * a1) / sqrt_g
+                
     return [new_advec1, new_advec2]
 

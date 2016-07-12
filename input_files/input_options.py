@@ -5,6 +5,8 @@
 # in globals_variables.py file). 
 
 
+DEBUG_MODE = False
+
 # Domain:
 SQUARE_2p_domain        = 0 # 2 squares domain (2 patches, C1)   [*DEFAULT*]
 CIRCLE_1p_domain        = 1 # circle domain (1 patch)

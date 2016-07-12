@@ -128,7 +128,7 @@ print np.shape(char_eta1)
 import numpy
 XXmat = numpy.zeros_like(char_eta1)
 YYmat = numpy.zeros_like(char_eta2)
-for npat in range(1):
+for npat in range(npatchs):
     for ii in range(numpy.shape(char_eta1)[1]):
         # if numpy.shape(numpy.shape(char_eta1))[0] == 2 :
         for jj in range(numpy.shape(char_eta1)[2]):
@@ -147,23 +147,23 @@ for npat in range(1):
     #     YYmat[ii] = D[0,0,0,1]
 
 if DEBUG_MODE:
-    npat = 0
+    npat = 1
     print "................", npat, "................"
     print "................ X ..............."
     print X_mat[npat]#-0.005-XXmat
     print "................ Y ..............."
     print Y_mat[npat]#-0.005-YYmat
-    print "................ E1 ..............."
+    print "................ E1 char ..............."
     print char_eta1[npat]
-    print "................ E2 ..............."
+    print "................ E2 char ..............."
     print char_eta2[npat]
     print "................ where ............."
     print where_char[npat]
     print "................ Jac ..............."
     print jac[npat]
-    print "................ X adv ..............."
+    print "................ X adv (=F1(E1,E2))..............."
     print XXmat[npat]
-    print "................ Y adv ..............."
+    print "................ Y adv (=F1(E1,E2))..............."
     print YYmat[npat]
 
 

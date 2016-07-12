@@ -284,14 +284,16 @@ def contain_particles(eta1_mat, eta2_mat, advec_coeffs, eta1_orig, eta2_orig, wh
             # print "eta1, eta2 in pat =", eta1_orig[where_out], eta2_orig[where_out]
             # print "transformed eta2 =", eta1_out_xmin, eta2_out_xmin
 
-            # [advec1, advec2] = \
-            #     inter.transform_advection2(advec_coef1[where_out], advec_coef2[where_out], where_orig, where_char[where_out], eta1_orig[where_out], eta2_orig[where_out], eta1_out_xmin, eta2_out_xmin)
+            print "beforeeeeeeee = ", advec_coef1[where_out], advec_coef2[where_out]
+            
+            [advec1, advec2] = \
+                inter.transform_advection2(advec_coef1[where_out], advec_coef2[where_out], where_orig, where_char[where_out], eta1_orig[where_out], eta2_orig[where_out], eta1_out_xmin, eta2_out_xmin)
 
             print "zzzzzzzzzzzzzzzzzzzzzzzzzzz"
-            [advec1, advec2] = \
-                inter.transform_advection(advec_coef1[where_out], advec_coef2[where_out], 1, list_faces)
+            # [advec1, advec2] = \
+            #     inter.transform_advection(advec_coef1[where_out], advec_coef2[where_out], 1, list_faces)
             print "aaaaaaaaaaa = ", advec1, advec2
-        
+            
             # We get the origin point
             eta1_orig[where_out] = eta1_out_xmin
             eta2_orig[where_out] = eta2_out_xmin
