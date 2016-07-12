@@ -24,6 +24,11 @@ if domain == SQUARE_2p_domain:
     list_faces_duplicated.append([0,0])
     geo.external_faces.pop(0)
     geo.external_faces.pop(-2)
+if domain == SQUARE_2p_C0_domain:
+    list_faces_duplicata.append([1,3])
+    list_faces_duplicated.append([0,1])
+    geo.external_faces.pop(1)
+    geo.external_faces.pop(-1)
 if domain == SQUARE_4p_domain:
     list_faces_duplicata.append([1,3])
     list_faces_duplicated.append([0,1])
@@ -446,6 +451,10 @@ def transform_patch_coordinates(eta_tab, face_tab):
 
 
 def transform_advection(advec_coef1, advec_coef2, face, list_faces):
+    # to transform A_i (advection in patch i: P_i) to A_j (resp. P_j)
+    # we need to perform the following computation:
+    # J_j * J_i * A_i = A_j
+    # where J_i and J_j are the jacobian matrix of P_i and P_j
     if np.size(list_faces) == 1:
         list_faces = [list_faces]
     for ind in range(np.size(list_faces)):
@@ -454,6 +463,77 @@ def transform_advection(advec_coef1, advec_coef2, face, list_faces):
             advec_coef1[ind] = advec_coef2[ind]
             advec_coef2[ind] = -temp
         elif list_faces[ind] == face:
+            print "adv coef 1 =", advec_coef1
+            print "adv coef 2 =", advec_coef2
             advec_coef1[ind] = -advec_coef1[ind]
             advec_coef2[ind] = -advec_coef2[ind]
     return [advec_coef1, advec_coef2]
+
+def transform_advection2(advec_coef1, advec_coef2, where_from, where_to, eta1_from, eta2_from, eta1_to, eta2_to):
+    # to transform A_i (advection in patch i: P_i) to A_j (resp. P_j)
+    # we need to perform the following computation:
+    # J_j * J_i * A_i = A_j
+    # where J_i and J_j are the jacobian matrix of P_i and P_j
+
+    size_prbm = np.size(where_from)
+
+    if (size_prbm == 1) :
+        u = eta1_from
+        v = eta2_from
+        npat = where_from
+        D = geo[npat].evaluate_deriv(u, v, nderiv=1)
+        d1F1 = D[1, :, :, 0][0]
+        d2F1 = D[2, :, :, 0][0]
+        d1F2 = D[1, :, :, 1][0]
+        d2F2 = D[2, :, :, 1][0]
+
+        u = eta1_to
+        v = eta2_to
+        npat = where_to
+        D = geo[npat].evaluate_deriv(u, v, nderiv=1)
+        d1G1 = D[1, :, :, 0][0]
+        d2G1 = D[2, :, :, 0][0]
+        d1G2 = D[1, :, :, 1][0]
+        d2G2 = D[2, :, :, 1][0]
+
+        a1 = advec_coef1
+        a2 = advec_coef2
+
+        new_advec1 = (d1G1*d1F1 + d2G1*d1F2)*a1 + (d1G1*d2F1 + d2G1*d2F2)*a2
+        new_advec2 = (d1G2*d1F1 + d2G2*d1F2)*a1 + (d1G2*d2F1 + d2G2*d2F2)*a2
+
+        return [new_advec1, new_advec2]
+    
+    new_advec1 = np.zeros_like(advec_coef1)
+    new_advec2 = np.zeros_like(advec_coef2)
+
+    for ind in range(size_prbm):
+        u = eta1_from[ind]
+        v = eta2_from[ind]
+        npat = where_from[ind]
+        D = geo[npat].evaluate_deriv(u, v, nderiv=1)
+        d1F1 = D[1, :, :, 0]
+        d2F1 = D[2, :, :, 0]
+        d1F2 = D[1, :, :, 1]
+        d2F2 = D[2, :, :, 1]
+
+        u = eta1_to[ind]
+        v = eta2_to[ind]
+        npat = where_to[ind]
+        D = geo[npat].evaluate_deriv(u, v, nderiv=1)
+        d1G1 = D[1, :, :, 0]
+        d2G1 = D[2, :, :, 0]
+        d1G2 = D[1, :, :, 1]
+        d2G2 = D[2, :, :, 1]
+
+        # [d1F1, d2F1, d1F2, d2F2] = jacobian(geo, where_from[ind], eta1_from[ind], eta2_from[ind])
+        # [d1G1, d2G1, d1G2, d2G2] = jacobian(geo, where_to[ind], eta1_to[ind], eta2_to[ind])
+
+        a1 = advec_coef1[ind]
+        a2 = advec_coef2[ind]
+        
+        new_advec1[ind] = (d1G1*d1F1 + d2G1*d1F2)*a1 + (d1G1*d2F1 + d2G1*d2F2)*a2
+        new_advec2[ind] = (d1G2*d1F1 + d2G2*d1F2)*a1 + (d1G2*d2F1 + d2G2*d2F2)*a2
+        
+    return [new_advec1, new_advec2]
+

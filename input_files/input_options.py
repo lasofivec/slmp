@@ -12,6 +12,7 @@ DISK_5p_domain          = 2 # crown (4 patches) + internal disk  ( = 5 patches)
 PINCHEDDISK_5p_domain   = 3 # pinched 5 patch disk (5 patches, no singular points)
 SQUARE_4p_domain        = 4 # 2 squares domain (2 patches, C1)
 ANNULUS_4p_domain       = 5 # annulus divided in 4 patches (like the disk_5p but without interior patch)
+SQUARE_2p_C0_domain     = 6 # 2 square not C1 only C0
 
 # Discretization:
 NPTS1 = 24 # Number of points along x
@@ -38,10 +39,13 @@ dist_center_y = 0.5 # For SQUARE_2p_domain
 
 # Definition of advection coefficient:
 ADVEC_CNST = 0 # constant coefficient advection
+#advec_dir1 = 0.1  #advection in 1st direction for all patches
+#advec_dir2 = 0.1  #advection in 2nd direction for all patches
 ADVEC_CIRC = 1 # circular advection (centered at 0,0)
 ADVEC_UCIR = 2 # un centered circular advection
 # centera = -0.1 # For ADVEC_UCIR
 # centerb = 0.0 # For ADVEC_UCIR
+
 
 # Method of derivative approximation:
 # Determines the formula to calculate the derivatives used

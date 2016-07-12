@@ -1,19 +1,21 @@
 from input_options import *
 
+DEBUG_MODE = False
+
 # *********************************************
 # Definition of the geometry
 # *********************************************
 domain = ANNULUS_4p_domain
 # Discretization:
-NPTS1 = 101
-NPTS2 = 101
+NPTS1 = 32
+NPTS2 = 32
 
 # *********************************************
 # Definition of simulation
 # *********************************************
 tmax = 7.5
 dt   = 0.05
-viewstep = 10
+viewstep = 5
 
 # *********************************************
 # Definition of initial distribution

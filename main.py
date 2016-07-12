@@ -94,10 +94,8 @@ for npat in list_patchs :
 #---------------------------
 if (which_advec == 0) :
     #    for a scalar advection :
-    advec[0] = 0.1 #advection in 1st direction for all patches
-    advec[1] = 0.1 #advection in 2nd direction for all patches
-    if (domain == SQUARE_2p_domain) :
-        advec[1] = 0.
+    advec[0] = advec_dir1 #advection in 1st direction for all patches
+    advec[1] = advec_dir2 #advection in 2nd direction for all patches
     print " Constant advection coefficients: "
     for ipat in range(0, npatchs):
         print "     For patch", ipat, " advection vector: ", advec[:, ipat, 0, 0]
@@ -126,20 +124,50 @@ plot_nrb_dens(X_mat, Y_mat, zn, func_formula, \
 # Computing the characteristics' origin
 char_eta1, char_eta2, where_char = get_pat_char(geo, eta1, eta2, advec, dt)
 
-if DEBUG_MODE:
-    print "................ X ..............."
-    print X_mat[0]
-    print "................ Y ..............."
-    print Y_mat[0]
-    print "................ E1 ..............."
-    print char_eta1[0]
-    print "................ E2 ..............."
-    print char_eta2[0]
-    print "................ where ............."
-    print where_char[0]
-    print "................ Jac ..............."
-    print jac[0]
+print np.shape(char_eta1)
+import numpy
+XXmat = numpy.zeros_like(char_eta1)
+YYmat = numpy.zeros_like(char_eta2)
+for npat in range(1):
+    for ii in range(numpy.shape(char_eta1)[1]):
+        # if numpy.shape(numpy.shape(char_eta1))[0] == 2 :
+        for jj in range(numpy.shape(char_eta1)[2]):
+            ee1 = char_eta1[npat][ii,jj]
+            ee2 = char_eta2[npat][ii,jj]
+            nnp = where_char[npat][ii,jj]
+            D = geo[nnp].evaluate_deriv(ee1, ee2, nderiv=0)
+            XXmat[npat,ii,jj] = D[0,0,0,0]
+            YYmat[npat,ii,jj] = D[0,0,0,1]
+    # else :
+    #     ee1 = char_eta1[ii]
+    #     ee2 = char_eta2[ii]
+    #     nnp = where_char[ii]
+    #     D = geo[nnp].evaluate_deriv(ee1, ee2, nderiv=0)
+    #     XXmat[ii] = D[0,0,0,0]
+    #     YYmat[ii] = D[0,0,0,1]
 
+if DEBUG_MODE:
+    npat = 0
+    print "................", npat, "................"
+    print "................ X ..............."
+    print X_mat[npat]#-0.005-XXmat
+    print "................ Y ..............."
+    print Y_mat[npat]#-0.005-YYmat
+    print "................ E1 ..............."
+    print char_eta1[npat]
+    print "................ E2 ..............."
+    print char_eta2[npat]
+    print "................ where ............."
+    print where_char[npat]
+    print "................ Jac ..............."
+    print jac[npat]
+    print "................ X adv ..............."
+    print XXmat[npat]
+    print "................ Y adv ..............."
+    print YYmat[npat]
+
+
+    
 # Extracting the particles that stay in their own domain:
 char_eta1_id = np.copy(char_eta1)
 char_eta2_id = np.copy(char_eta2)

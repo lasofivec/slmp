@@ -22,6 +22,8 @@ which_advec = ADVEC_CNST
 which_deriv = DERIV_FDU2
 which_interp = INTER_SLL3
 DEBUG_MODE = False
+advec_dir1 = 0.1
+advec_dir2 = 0.1
 # *******************************
 
 

@@ -26,9 +26,11 @@ dist_center_y = 0.5
 # Definition of advection coefficient
 # *********************************************
 which_advec = ADVEC_CNST
+advec_dir1 = 0.1
+advec_dir2 = 0.
 
 #**********************************************
 # Definition of derivative approximation
 # *********************************************
-which_deriv  = DERIV_LGU4
+which_deriv  = DERIV_LGC4
 which_interp = INTER_SLL3 

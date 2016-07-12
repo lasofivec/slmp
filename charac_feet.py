@@ -151,6 +151,7 @@ def rk4(npat, xn, yn, dt, rhs_func):
 
     advec_x = 0.5 * dt / 3. * (k1x + 2.0 * k2x + 2.0 * k3x + k4x)
     advec_y = 0.5 * dt / 3. * (k1y + 2.0 * k2y + 2.0 * k3y + k4y)
+    print ",,,,,,,,,,,,,,, last call ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
     # print "----advec x = ", advec_x
     # print "----advec y = ", advec_y
     xnp1 = xn - advec_x
@@ -158,7 +159,7 @@ def rk4(npat, xn, yn, dt, rhs_func):
     last_advec_percent = np.zeros_like(xn)
     where_char = np.zeros_like(xn, dtype=np.int) + npat
     contain_particles(xn, yn, [advec_x, advec_y], xnp1, ynp1, where_char, last_advec_percent)
-
+    print ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
     return xnp1, ynp1, where_char
 
 
@@ -166,6 +167,7 @@ def contain_particles(eta1_mat, eta2_mat, advec_coeffs, eta1_orig, eta2_orig, wh
     """
     Resets values of characteristics origin such that their coordinates remain on the patch.
     Furthermore it saves the value of the advection done in eta1 and eta2.
+    RECURSIVE FUNCTION.
 
     Notes:
         rhs_eta1, rhs_eta2, and dt, are only need to compute the advection done (when not the characteristics origin
@@ -187,27 +189,54 @@ def contain_particles(eta1_mat, eta2_mat, advec_coeffs, eta1_orig, eta2_orig, wh
 
     # Separating advection:
     [advec_coef1, advec_coef2] = advec_coeffs
-    #
-    # print "---------- eta mat"
-    # print eta1_mat
-    # print eta2_mat
-    # print "---------- advec"
-    # print advec_coef1
-    # print advec_coef2
-    # print "---------- origins"
-    # print eta1_orig
-    # print eta2_orig
-    # print "---------- where"
-    # print where_char
-    # print "---------- last percent"
-    # print last_advec_percent
 
+    if DEBUG_MODE:
+        print "---------- eta mat"
+        print eta1_mat
+        print eta2_mat
+        print "---------- advec"
+        print advec_coef1
+        print advec_coef2
+        print "---------- origins"
+        print eta1_orig
+        print eta2_orig
+        print "---------- where"
+        print where_char
+        print "---------- last percent"
+        print last_advec_percent
+        # # computing X,Y:
+        # import numpy
+        # XXmat = numpy.zeros_like(eta1_mat)
+        # YYmat = numpy.zeros_like(eta2_mat)
+        # for ii in range(numpy.shape(eta1_mat)[0]):
+        #     if numpy.shape(numpy.shape(eta1_mat))[0] == 2 :
+        #         for jj in range(numpy.shape(eta1_mat)[1]):
+        #             ee1 = eta1_mat[ii,jj]
+        #             ee2 = eta2_mat[ii,jj]
+        #             nnp = where_char[ii,jj]
+        #             D = geo[nnp].evaluate_deriv(ee1, ee2, nderiv=0)
+        #             XXmat[ii,jj] = D[0,0,0,0]
+        #             YYmat[ii,jj] = D[0,0,0,1]
+        #     else :
+        #         ee1 = eta1_mat[ii]
+        #         ee2 = eta2_mat[ii]
+        #         nnp = where_char[ii]
+        #         D = geo[nnp].evaluate_deriv(ee1, ee2, nderiv=0)
+        #         XXmat[ii] = D[0,0,0,0]
+        #         YYmat[ii] = D[0,0,0,1]
+        # print "---------- XY mat"
+        # print XXmat
+        # print YYmat
+        
     # For particles that stay in the domain
     in_indices = np.where((eta1_orig >= 0.) & (eta1_orig <= 1.) & (eta2_orig >= 0.) & (eta2_orig <= 1.))
     # Nothing to for particles that are in domain
     last_advec_percent[in_indices] = 100
     if (last_advec_percent == 100).all() :
         return
+
+    # print "---------- last percent"
+    # print last_advec_percent
 
     # For particles that go out on the x axis, below 0 :
     where_out = np.where(eta1_orig < 0.)
@@ -237,20 +266,32 @@ def contain_particles(eta1_mat, eta2_mat, advec_coeffs, eta1_orig, eta2_orig, wh
         [list_pats, list_faces]= inter.connectivity(where_char[where_out], 1)
         # print "conn pat = ", list_pats
         # print "conn fac = ", list_faces
-        where_orig = where_char[where_out]
-        where_char[where_out] = list_pats
-        [eta1_out_xmin, eta2_out_xmin] = \
-            inter.transform_patch_coordinates(eta2_orig[where_out], list_faces)
-        [advec1, advec2] = \
-            inter.transform_advection(advec_coef1[where_out], advec_coef2[where_out], 1, list_faces)
+
         # We treat external external boundary conditions here, ie when [npat, face] = [npat', face']
-        where_not_dirichlet = np.where((where_orig != list_pats) & (np.asarray(list_faces) != 1))
+        where_not_dirichlet = np.where((where_char[where_out] != list_pats) & (np.asarray(list_faces) != 1))[0]
         if np.shape(where_out)[0]!=1:
             where_out = [where_out[0][where_not_dirichlet], where_out[1][where_not_dirichlet]]
         else:
             where_out = where_out[0][where_not_dirichlet]
             np.reshape(where_out,(1, np.size(where_out)))
+
         if np.size(where_out) > 0:
+            where_orig = where_char[where_out]
+            list_pats2 = [list_pats[val0] for index0, val0 in enumerate(where_not_dirichlet)]
+            where_char[where_out] = list_pats2
+            [eta1_out_xmin, eta2_out_xmin] = \
+                inter.transform_patch_coordinates(eta2_orig[where_out], list_faces)
+            # print "eta1, eta2 in pat =", eta1_orig[where_out], eta2_orig[where_out]
+            # print "transformed eta2 =", eta1_out_xmin, eta2_out_xmin
+
+            # [advec1, advec2] = \
+            #     inter.transform_advection2(advec_coef1[where_out], advec_coef2[where_out], where_orig, where_char[where_out], eta1_orig[where_out], eta2_orig[where_out], eta1_out_xmin, eta2_out_xmin)
+
+            print "zzzzzzzzzzzzzzzzzzzzzzzzzzz"
+            [advec1, advec2] = \
+                inter.transform_advection(advec_coef1[where_out], advec_coef2[where_out], 1, list_faces)
+            print "aaaaaaaaaaa = ", advec1, advec2
+        
             # We get the origin point
             eta1_orig[where_out] = eta1_out_xmin
             eta2_orig[where_out] = eta2_out_xmin
@@ -275,6 +316,12 @@ def contain_particles(eta1_mat, eta2_mat, advec_coeffs, eta1_orig, eta2_orig, wh
             eta1_orig[where_out] = eta1_out_xmin
             eta2_orig[where_out] = eta2_out_xmin
             last_advec_percent[where_out] = this_percent
+            if DEBUG_MODE:
+                print "results ========="
+                print "origins of chars: ", eta1_orig[where_out], eta2_orig[where_out]
+                print "in the pats:", where_char[where_out]
+                print "percent :", this_percent
+                print "advec =", advec1
 
     # For particles that go out on the x axis, above 1 :
     where_out = np.where(eta1_orig - 1. > 0.)

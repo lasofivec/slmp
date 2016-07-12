@@ -28,6 +28,10 @@ def get_geometry(domain):
         ls_domain = "../domains/annulus.xml"
         import caid.cad_geometry as cg
         geo = cg.cad_geometry(ls_domain)
+    elif (domain == 6) :
+        ls_domain = "../domains/2squares_C0.xml"
+        import caid.cad_geometry as cg
+        geo = cg.cad_geometry(ls_domain)
     else:
         raise SystemExit("ERROR in globals_variables:" \
                          + " no domain associated to that number")
