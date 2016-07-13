@@ -7,15 +7,15 @@ DEBUG_MODE = False
 # *********************************************
 domain = ANNULUS_4p_domain
 # Discretization:
-NPTS1 = 32
-NPTS2 = 32
+NPTS1 = 51
+NPTS2 = 51
 
 # *********************************************
 # Definition of simulation
 # *********************************************
-tmax = 7.5
-dt   = 0.05
-viewstep = 5
+tmax = 8.5
+dt   = 0.005
+viewstep = 20
 
 # *********************************************
 # Definition of initial distribution
@@ -32,5 +32,5 @@ which_advec = ADVEC_CNST
 #**********************************************
 # Definition of derivative approximation
 # *********************************************
-which_deriv  = DERIV_LGC4
+which_deriv  = 0#DERIV_LGC4
 which_interp = INTER_SLL3 

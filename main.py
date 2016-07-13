@@ -205,6 +205,7 @@ for tstep in range(1,nstep+1) :
 
     # Computing the limit conditions :
     eta1_slopes, eta2_slopes = inter.compute_slopes(zn, list_patchs, jac)
+
     for npat in list_patchs :
         # Interpolation on points that stay IN the domain :
         znp1[npat] = mp_int.interpolate_2d(npat, zn[npat],
@@ -214,8 +215,8 @@ for tstep in range(1,nstep+1) :
                                            eta2_slopes[npat])
         if np.size(np.where(np.abs(znp1) > 10**5)) > 0:
             print "Gigantic value !!", np.where(np.abs(znp1) > 10**5)
-            import sys
-            sys.exit("Error !!")
+            # import sys
+            # sys.exit("Error !!")
 
         pat_out_char = tab_ind_out[npat]
 

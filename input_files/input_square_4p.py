@@ -5,8 +5,8 @@ from input_options import *
 # *********************************************
 domain = SQUARE_4p_domain
 # Discretization:
-NPTS1 = 24
-NPTS2 = 24
+NPTS1 = 32
+NPTS2 = 32
 
 # *********************************************
 # Definition of simulation
@@ -30,5 +30,5 @@ which_advec = ADVEC_CNST
 #**********************************************
 # Definition of derivative approximation
 # *********************************************
-which_deriv  = DERIV_LGU4
+which_deriv  = 0#DERIV_LGU4
 which_interp = INTER_SLL3 

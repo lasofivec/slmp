@@ -64,12 +64,14 @@ def connectivity(npat, face):
             return [npat, face]
         count0 = list_faces_duplicated.count([npat, face])
         if count0 == 1:
-            return list_faces_duplicata[list_faces_duplicated.index([npat, face])]
+            ind = list_faces_duplicated.index([npat, face])
+            return list_faces_duplicata[ind]
         else:
-            return list_faces_duplicated[list_faces_duplicata.index([npat, face])]
+            ind = list_faces_duplicata.index([npat, face])
+            return list_faces_duplicated[ind]
     else:
-        list_pats = []#np.zeros_like(npat)
-        list_faces = []#np.zeros_like(npat)
+        list_pats = []
+        list_faces = []
         for i in range(np.size(npat)):
             [pat_i, face_i] = connectivity(npat[i], face)
             list_pats.append(pat_i)
@@ -258,14 +260,17 @@ def compute_derivatives_bound(data, list_patchs):
         [v3, f3] = connectivity(npat, 3)
 
         for face in range(4):
+            
             up_isdir = False
             dw_isdir = False
+            
             if (face == 0) or (face == 2):
                 d1f = np.zeros(NPTS2)
                 d2f = np.zeros(NPTS2)
             if (face == 1) or (face == 3):
                 d1f = np.zeros(NPTS1)
                 d2f = np.zeros(NPTS1)
+
             # Computation:
             if face == 0:
                 if (f3 == 3) and (npat == v3):
@@ -368,21 +373,33 @@ def compute_slopes(tab, list_patchs, jac):
     # ie. d(f)/d(eta_#) and n = (d(F)/d(eta_#), d(F)/d(eta_#))
     derivatives = compute_derivatives_bound(data, list_patchs)
     norms = mapping_norms(list_patchs, jac)
-
+    
     for npat in list_patchs:
-
+        if DEBUG_MODE:
+            print "............... For patch ",npat," .............."
         deriv_npat = derivatives[npat]
         norms_npat = norms[npat]
 
         for face in range(4):
 
+            if DEBUG_MODE:
+                print "............. Face", face
+
             deriv_face = deriv_npat[face]
 
             norms_face = norms_npat[face]
 
+            
             if (which_deriv == 3):
                 gradF1 = norms_face[0]
                 gradF2 = norms_face[1]
+
+                if DEBUG_MODE:
+                    print "******* grad F1 *********"
+                    print gradF1
+                    print "******* grad F2 *********"
+                    print gradF2
+                
 
                 if (face == 0):
                     eta2_slopes[npat, 0] = deriv_face[0] * gradF2[0] + deriv_face[1] * gradF2[1]
@@ -392,6 +409,15 @@ def compute_slopes(tab, list_patchs, jac):
                     eta2_slopes[npat, 1] = deriv_face[0] * gradF2[0] + deriv_face[1] * gradF2[1]
                 elif (face == 3):
                     eta1_slopes[npat, 1] = deriv_face[0] * gradF1[0] + deriv_face[1] * gradF1[1]
+            elif (which_deriv == 0) :
+                if face == 0:
+                    eta2_slopes[npat, 0] = deriv_face[1]
+                elif face == 1 :
+                    eta1_slopes[npat, 0] = deriv_face[0]
+                elif face == 2 :
+                    eta2_slopes[npat, 1] = deriv_face[1]
+                elif face == 3 :
+                    eta1_slopes[npat, 1] = deriv_face[0]
             else :
                 import sys, os
                 sys.exit("Error in compute_slopes(): not defined for this type of derivation method")
