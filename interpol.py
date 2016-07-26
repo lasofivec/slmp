@@ -1,5 +1,6 @@
 import numpy as np
 from globals_variables import *
+from geometry import geo
 
 # *************************************
 #

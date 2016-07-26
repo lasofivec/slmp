@@ -8,6 +8,14 @@ sys.path.append('./input_files/')
 from input_options import *
 
 
+# ***************************************
+# Definition of personal mesh grid function
+# ***************************************
+def my_meshgrid(eta1, eta2) :
+    et1, et2 = np.meshgrid(eta1, eta2)
+    return et1.transpose(), et2.transpose()
+
+
 # Default values (see their meaning in the input_options file)
 domain = SQUARE_2p_domain
 NPTS1 = 48
@@ -41,10 +49,6 @@ if len(argv) > 1:
 # number of time steps
 nstep = int(math.floor(tmax/dt))
 
-# Getting the geometry:
-NPTS    = [NPTS1, NPTS2]
-geo     = get_geometry(domain)
-npatchs = geo.npatchs
 
 name_advec = ""
 if (which_advec == 0) :
@@ -122,48 +126,6 @@ def write_globals(path, str_num) :
 
 #TODO : division of 2 integers => float ? from __future__ import division
 
-# ***************************************
-# Definition of personal mesh grid function
-# ***************************************
-def my_meshgrid(eta1, eta2) :
-    et1, et2 = np.meshgrid(eta1, eta2)
-    return et1.transpose(), et2.transpose()
-
 epsilon = 0.01
 epsilon2 = 10**-14
-
-def jacobian_function(npat, e1, e2):
-    d1F1 = np.zeros((NPTS1, NPTS2))
-    d2F1 = np.zeros((NPTS1, NPTS2))
-    d1F2 = np.zeros((NPTS1, NPTS2))
-    d2F2 = np.zeros((NPTS1, NPTS2))
-    if npat == 0:
-        d1F1 = 0.5*cos(-0.5*pi*e2-0.5*pi)
-        d2F1 = 0.5*pi*(0.5*e1+0.5)*sin(-0.5*pi*e2-0.5*pi)
-        d1F2 = 0.5*sin(-0.5*pi*e2-0.5*pi)
-        d2F2 = -0.5*pi*(0.5*e1+0.5)*cos(-0.5*pi*e2-0.5*pi)
-    elif npat == 1:
-        d1F1 = 0.5*cos(-0.5*pi*e2)
-        d2F1 = 0.5*pi*(0.5*e1+0.5)*sin(-0.5*pi*e2)
-        d1F2 = 0.5*sin(-0.5*pi*e2)
-        d2F2 = -0.5*pi*(0.5*e1+0.5)*cos(-0.5*pi*e2)
-    elif npat == 2:
-        d1F1 = -0.5*pi*(0.5*e2+0.5)*sin(0.5*pi*e1)
-        d2F1 = 0.5*cos(0.5*pi*e1)
-        d1F2 = 0.5*pi*(0.5*e2+0.5)*cos(0.5*pi*e1)
-        d2F2 = 0.5*sin(0.5*pi*e1)
-    elif npat == 3:
-        d1F1 = -0.5*pi*(0.5*e2+0.5)*sin(0.5*pi*e1+0.5*pi)
-        d2F1 = 0.5*cos(0.5*pi*e1+0.5*pi)
-        d1F2 = 0.5*pi*(0.5*e2+0.5)*cos(0.5*pi*e1+0.5*pi)
-        d2F2 = 0.5*sin(0.5*pi*e1+0.5*pi)
-    elif npat == 4:
-        sqrte1 = sqrt(1. - 0.5*(2.*e1-1.)**2)
-        sqrte2 = sqrt(1. - 0.5*(2.*e2-1.)**2)
-        e1e2 = (2.*e1-1.)*(2.*e2-1.)
-        d1F1 =  0.5/sqrt(2.)*(e1e2/sqrte1 - 2.*sqrte2)
-        d2F1 = -0.5/sqrt(2.)*(2.*sqrte1 - e1e2/sqrte2)
-        d1F2 = -0.5/sqrt(2.)*(e1e2/sqrte1 + 2.*sqrte2)
-        d2F2 =  0.5/sqrt(2.)*(2.*sqrte1 + e1e2/sqrte2)
-    return [d1F1, d2F1, d1F2, d2F2]
     
