@@ -4,6 +4,8 @@ from prettyplotlib import brewer2mpl
 import numpy as np
 import os, sys
 from globals_variables import *
+from geometry import geo
+
 # Plotting variables:
 levels = np.linspace(PLOT_VAL_MIN, PLOT_VAL_MAX, 25)
 pl.style.use('thesisstyle')
@@ -59,13 +61,14 @@ def comp_err_time(geo, X, Y, dx, dy, func_init, list_zi, list_errs, \
     list_err_inf = []
     list_err_l2  = []
     list_min = []
+    list_max = []
     list_mass = []
     for npat,nrb in enumerate(geo) :
         # Getting the coordinates in the pysical space
         Xm = dx[npat].reshape((NPTS1*NPTS2))
         Ym = dy[npat].reshape((NPTS1*NPTS2))
 
-        # Calculating the distrubtion func on these points :
+        # Calculating the distribution func on these points :
         zm = func_init(Xm, Ym)
         z  = zm.reshape((NPTS1, NPTS2))
 
@@ -74,10 +77,12 @@ def comp_err_time(geo, X, Y, dx, dy, func_init, list_zi, list_errs, \
         err_inf = 1./NPTS1/NPTS2 * LA.norm(list_zi[npat]-z, ord=np.inf)
         err_l2  = 1./NPTS1/NPTS2 * LA.norm(list_zi[npat]-z)
         minval = np.min(list_zi[npat])
+        maxval = np.max(list_zi[npat])
         sumval = 1./NPTS1/NPTS2 * np.sum(list_zi[npat])
         list_err_inf.append(err_inf)
         list_err_l2.append(err_l2)
         list_min.append(minval)
+        list_max.append(maxval)
         list_mass.append(sumval)
         if (show) :
             diff = list_zi[npat]-z
@@ -105,6 +110,7 @@ def comp_err_time(geo, X, Y, dx, dy, func_init, list_zi, list_errs, \
     list_errs.append(list_err_inf)
     list_errs.append(list_err_l2)
     list_errs.append(list_min)
+    list_errs.append(list_max)
     list_errs.append(list_mass)
 
 
@@ -113,7 +119,8 @@ def plot_errors(list_errs):
     list_err_inf = list_errs[0]
     list_err_l2  = list_errs[1]
     list_minval  = list_errs[2]
-    list_mass    = list_errs[3]
+    list_maxval  = list_errs[3]
+    list_mass    = list_errs[4]
 
     ntime = np.shape(list_err_inf)[0]
     npats = np.shape(list_err_inf)[1]
@@ -121,6 +128,7 @@ def plot_errors(list_errs):
     list_emt_inf = []
     list_emt_l2  = []
     list_emt_min = []
+    list_emt_max = []
     list_emt_mass = []
     list_tmp = []
 
@@ -129,15 +137,18 @@ def plot_errors(list_errs):
         max_err_inf = 0.
         max_err_l2  = 0.
         min_val = 0.
+        max_val = 0.
         mass_val = 0.
         for n in range(npats) :
             max_err_inf = max(list_err_inf[tstep][n], max_err_inf)
             max_err_l2  = max(list_err_l2[tstep][n], max_err_l2)
             min_val = min(list_minval[tstep][n], min_val)
+            max_val = max(list_maxval[tstep][n], max_val)
             mass_val += list_mass[tstep][n]
         list_emt_inf.append(max_err_inf)
         list_emt_l2.append(max_err_l2)
         list_emt_min.append(min_val)
+        list_emt_max.append(1.-max_val)
         list_emt_mass.append(mass_val)
     list_emt_mass = [e - list_emt_mass[0] for e in list_emt_mass]
 
@@ -156,10 +167,11 @@ def plot_errors(list_errs):
     pl.close()
 
     fig, ax = pl.subplots(1)
-    pl.title("Time evolution of minimal value of $f(t,x,y)$")
+    pl.title("Time evolution of min and (1.-max) value of $f(t,x,y)$")
     pl.xlabel("Time")
     #    ppl.legend(ax, loc='upper left')
     pl.plot(list_tmp, list_emt_min, '-')
+    pl.plot(list_tmp, list_emt_max, '--')
     # *** Saving image :
     fig.savefig("results/results_figures/Minval_over_time.eps", \
                 format='eps', dpi=1000, facecolor='w', edgecolor='none')

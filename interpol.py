@@ -1,5 +1,6 @@
 import numpy as np
 from globals_variables import *
+from geometry import geo
 
 # *************************************
 #
@@ -61,21 +62,21 @@ def connectivity(npat, face):
 
     if np.size(npat) == 1:
         if [npat, face] in geo.external_faces:
-            return [npat, face]
+            return [[npat], [face]]
         count0 = list_faces_duplicated.count([npat, face])
         if count0 == 1:
             ind = list_faces_duplicated.index([npat, face])
-            return list_faces_duplicata[ind]
+            return [[list_faces_duplicata[ind][0]], [list_faces_duplicata[ind][1]]]
         else:
             ind = list_faces_duplicata.index([npat, face])
-            return list_faces_duplicated[ind]
+            return [[list_faces_duplicated[ind][0]], [list_faces_duplicated[ind][1]]]
     else:
         list_pats = []
         list_faces = []
         for i in range(np.size(npat)):
             [pat_i, face_i] = connectivity(npat[i], face)
-            list_pats.append(pat_i)
-            list_faces.append(face_i)
+            list_pats.append(pat_i[0])
+            list_faces.append(face_i[0])
         return [list_pats, list_faces]
 
 
@@ -254,10 +255,10 @@ def compute_derivatives_bound(data, list_patchs):
     for npat in list_patchs:
         derivatives_pat = []
         # getting patchs neighbors:
-        [v0, f0] = connectivity(npat, 0)
-        [v1, f1] = connectivity(npat, 1)
-        [v2, f2] = connectivity(npat, 2)
-        [v3, f3] = connectivity(npat, 3)
+        [[v0], [f0]] = connectivity(npat, 0)
+        [[v1], [f1]] = connectivity(npat, 1)
+        [[v2], [f2]] = connectivity(npat, 2)
+        [[v3], [f3]] = connectivity(npat, 3)
 
         for face in range(4):
             
@@ -440,21 +441,7 @@ def transform_patch_coordinates(eta_tab, face_tab):
     """
     list_eta1 = []
     list_eta2 = []
-    if np.size(eta_tab)==1:
-        face = face_tab
 
-        if face == 0:
-            return [eta_tab, 0.0]
-        elif face == 1:
-            return[eta_tab, 0.0]
-        elif face == 2:
-            return [eta_tab, 1.0]
-        elif face == 3:
-            return [1.0, eta_tab]
-        else:
-            import sys
-            sys.exit("ERROR in transform_patch_coordinates(): wrong face index")
-            return
     for ind in range(np.size(eta_tab)):
         face = face_tab[ind]
         eta  = eta_tab[ind]

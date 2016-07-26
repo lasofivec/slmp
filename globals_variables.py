@@ -1,13 +1,19 @@
 import numpy as np
 import math
 from reading_geometry import get_geometry
-from reading_geometry import get_patches
-from distribution_functions import initialize_distribution
 from numpy import sin, cos, pi, sqrt
 
 import sys
 sys.path.append('./input_files/')
 from input_options import *
+
+
+# ***************************************
+# Definition of personal mesh grid function
+# ***************************************
+def my_meshgrid(eta1, eta2) :
+    et1, et2 = np.meshgrid(eta1, eta2)
+    return et1.transpose(), et2.transpose()
 
 
 # Default values (see their meaning in the input_options file)
@@ -28,6 +34,7 @@ advec_dir1 = 0.1
 advec_dir2 = 0.1
 # *******************************
 
+
 # Reading input File ............................
 from sys import argv
 if len(argv) > 1:
@@ -39,63 +46,8 @@ if len(argv) > 1:
 #................................................
 
 
-# *****************************************
-# Defining the distribution test function
-
-func_init = initialize_distribution(which_f, dist_center_x=dist_center_x, dist_center_y=dist_center_y)
-print "=> distribution function initialized"
-print "____________________________________"
-print ""
-# *****************************************
-
-# ***************************************
-# Definition of personal mesh grid function
-def my_meshgrid(eta1, eta2) :
-    et1, et2 = np.meshgrid(eta1, eta2)
-    return et1.transpose(), et2.transpose()
-# ***************************************
-
-
 # number of time steps
 nstep = int(math.floor(tmax/dt))
-
-# Getting the geometry:
-NPTS    = [NPTS1, NPTS2]
-geo     = get_geometry(domain)
-npatchs = geo.npatchs
-list_patchs = get_patches(geo)
-
-# Computing the physical coo & jacobian of the transformation:
-#-------------------------------------------
-# Defining knots and value of field on knots
-#-------------------------------------------
-eta1  = np.linspace(0., 1., NPTS1)
-eta2  = np.linspace(0., 1., NPTS2)
-z     = np.zeros((npatchs, NPTS1*NPTS2))
-X_mat = np.zeros((npatchs, NPTS1, NPTS2))
-Y_mat = np.zeros((npatchs, NPTS1, NPTS2))
-jac   = np.zeros((npatchs, 4, NPTS1, NPTS2))
-
-eta1_mat, eta2_mat = my_meshgrid(eta1,eta2)
-# *********************************************
-
-for npat in list_patchs :
-    # Calculating the corresponding values
-    # of knots on the physical space :
-    D = geo[npat].evaluate_deriv(eta1,eta2, nderiv=1)
-    X_mat[npat] = D[0,:,:,0]
-    Y_mat[npat] = D[0,:,:,1]
-    # Calculation the density on these points :
-    X       = X_mat[npat].reshape((NPTS1*NPTS2))
-    Y       = Y_mat[npat].reshape((NPTS1*NPTS2))
-    z[npat] = func_init(X, Y)
-    # python has an UF for very small values of x,y at exp(x,y) :
-    z[np.where(abs(z) < 10**-9)] = 0.
-    # Computing jacobian values
-    jac[npat,0,:,:] = D[1, :,:, 0]
-    jac[npat,1,:,:] = D[2, :,:, 0]
-    jac[npat,2,:,:] = D[1, :,:, 1]
-    jac[npat,3,:,:] = D[2, :,:, 1]
 
 
 name_advec = ""
@@ -173,7 +125,6 @@ def write_globals(path, str_num) :
 
 
 #TODO : division of 2 integers => float ? from __future__ import division
-
 
 epsilon = 0.01
 epsilon2 = 10**-14

@@ -1,19 +1,21 @@
 from input_options import *
 
+DEBUG_MODE = False
+
 # *********************************************
 # Definition of the geometry
 # *********************************************
 domain = SQUARE_2p_domain
 # Discretization:
-NPTS1 = 16
-NPTS2 = 16
+NPTS1 = 100
+NPTS2 = 100
 
 # *********************************************
 # Definition of simulation
 # *********************************************
-tmax = 9.
-dt   = 0.05
-viewstep = 10
+tmax = 10.
+dt   = 0.75
+viewstep = 1
 
 # *********************************************
 # Definition of initial distribution

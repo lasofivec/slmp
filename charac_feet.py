@@ -1,4 +1,6 @@
 from globals_variables import *
+from geometry import npatchs
+from geometry import jac
 import interpol as inter
 
 
@@ -550,11 +552,10 @@ def jacobian(geo, npat, eta1_mat, eta2_mat):
     d2F2 = np.zeros((NPTS1, NPTS2))
 
     # Getting the derivatives
-    #D = geo[npat].evaluate_deriv(u, v, nderiv=1)
-    d1F1 = jac[npat, 0, :, :]#D[1, :, :, 0]
-    d2F1 = jac[npat, 1, :, :]#D[2, :, :, 0]
-    d1F2 = jac[npat, 2, :, :]#D[1, :, :, 1]
-    d2F2 = jac[npat, 3, :, :]#D[2, :, :, 1]
+    d1F1 = jac[npat,0,:,:]
+    d2F1 = jac[npat,1,:,:]
+    d1F2 = jac[npat,2,:,:]
+    d2F2 = jac[npat,3,:,:]
 
     # Getting rid of close to 0 values
     d1F1[np.where(abs(d1F1) <= 10 ** -14)] = 0.0

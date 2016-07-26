@@ -1,4 +1,5 @@
 #! /usr/bin/python
+from geometry import *
 from scipy.sparse.linalg import spsolve, splu
 from scipy.interpolate import interp2d
 from scipy.io import mmread, mmwrite
@@ -10,19 +11,9 @@ from post_evaluation import *
 import interpol as inter
 from globals_variables import *
 from charac_feet import *
-from distribution_functions import initialize_distribution
 
 
 
-
-# *****************************************
-# Defining the distribution test function
-
-func_init = initialize_distribution(which_f)
-print "=> distribution function initialized"
-print "____________________________________"
-print ""
-# *****************************************
 
 
 #============================================================#
@@ -33,6 +24,7 @@ print ""
 
 
 advec = np.zeros((2, npatchs, NPTS1, NPTS2))
+
 
 #---------------------------
 #    advection definition
@@ -123,24 +115,12 @@ for npat in list_patchs:
     char_eta1_id[npat][ind_out_pat] = 0.0
     char_eta2_id[npat][ind_out_pat] = 0.0
 
-# # Using jacobian values:
-# for npat in list_patchs :
-#     jinv_11 =  jac[npat,3,:,:]
-#     jinv_12 = -jac[npat,1,:,:]
-#     jinv_21 = -jac[npat,2,:,:]
-#     jinv_22 =  jac[npat,0,:,:]
-#     jacob = jinv_11 * jinv_22 - jinv_21 * jinv_12
-#     jacob[np.where(jacob == 0.)] = epsilon
-#     char_eta1_id[npat,:,:] = eta1_mat - dt * (advec[0,0]*jinv_11 + advec[1,0]*jinv_12)/jacob
-#     char_eta2_id[npat,:,:] = eta2_mat - dt * (advec[0,0]*jinv_21 + advec[1,0]*jinv_22)/jacob
-
-
-
 
 # arrays for storing the errors :
 list_err_inf = []
 list_err_l2  = []
 list_minval  = []
+list_maxval  = []
 list_mass    = []
 
 # ......................................................
@@ -195,7 +175,8 @@ for tstep in range(1,nstep+1) :
         list_err_inf.append(list_errs[0])
         list_err_l2.append(list_errs[1])
         list_minval.append(list_errs[2])
-        list_mass.append(list_errs[3])
+        list_maxval.append(list_errs[3])
+        list_mass.append(list_errs[4])
         # Printing some results
         print('= =========== TSTEP = ', tstep, "/", nstep, ' =========== =')
         maxerr = np.max(list_errs[0])
@@ -217,7 +198,7 @@ title  = 'Computed solution of the advection equation at $t =$ ' \
          + str(tstep*dt)+'\n\nwith '+func_formula
 plot_nrb_dens(X_mat, Y_mat, zn, title, show = True, save = False)
 
-plot_errors([list_err_inf, list_err_l2, list_minval, list_mass])
+plot_errors([list_err_inf, list_err_l2, list_minval, list_maxval, list_mass])
 
 ##TO SAVE RESULTS :
 # maxerr = np.max(final_errs[0])*10.
