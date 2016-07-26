@@ -7,15 +7,15 @@ DEBUG_MODE = False
 # *********************************************
 domain = ANNULUS_4p_domain
 # Discretization:
-NPTS1 = 51
-NPTS2 = 51
+NPTS1 = 100
+NPTS2 = 100
 
 # *********************************************
 # Definition of simulation
 # *********************************************
 tmax = 8.5
-dt   = 0.005
-viewstep = 20
+dt   = 0.04
+viewstep = 10
 
 # *********************************************
 # Definition of initial distribution
