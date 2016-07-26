@@ -153,13 +153,13 @@ def rk4(npat, xn, yn, dt, rhs_func):
 
     advec_x = 0.5 * dt / 3. * (k1x + 2.0 * k2x + 2.0 * k3x + k4x)
     advec_y = 0.5 * dt / 3. * (k1y + 2.0 * k2y + 2.0 * k3y + k4y)
-    print ",,,,,,,,,,,,,,, last call ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
+    
     xnp1 = xn - advec_x
     ynp1 = yn - advec_y
     last_advec_percent = np.zeros_like(xn)
     where_char = np.zeros_like(xn, dtype=np.int) + npat
     contain_particles(xn, yn, [advec_x, advec_y], xnp1, ynp1, where_char, last_advec_percent)
-    print ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
+
     return xnp1, ynp1, where_char
 
 

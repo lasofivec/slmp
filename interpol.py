@@ -515,6 +515,7 @@ def transform_advection(advec_coef1, advec_coef2, where_from, where_to, eta1_fro
         d1G2 = D[1, :, :, 1][0]
         d2G2 = D[2, :, :, 1][0]
         sqrt_g = d1G1*d2G2 - d1G2*d2G1
+        sqrt_g[np.where(sqrt_g == 0.)] = epsilon
         
         new_advec1 = (d2G2 * a1 - d2G1 * a2) / sqrt_g
         new_advec2 = (d1G1 * a2 - d1G2 * a1) / sqrt_g
@@ -549,6 +550,7 @@ def transform_advection(advec_coef1, advec_coef2, where_from, where_to, eta1_fro
         d1G2 = D[1, :, :, 1]
         d2G2 = D[2, :, :, 1]
         sqrt_g = d1G1*d2G2 - d1G2*d2G1
+        sqrt_g[np.where(sqrt_g == 0.)] = epsilon
         
         new_advec1[ind] = (d2G2 * a1 - d2G1 * a2) / sqrt_g
         new_advec2[ind] = (d1G1 * a2 - d1G2 * a1) / sqrt_g
