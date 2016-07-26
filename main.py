@@ -120,6 +120,7 @@ for npat in list_patchs:
 list_err_inf = []
 list_err_l2  = []
 list_minval  = []
+list_maxval  = []
 list_mass    = []
 
 # ......................................................
@@ -174,7 +175,8 @@ for tstep in range(1,nstep+1) :
         list_err_inf.append(list_errs[0])
         list_err_l2.append(list_errs[1])
         list_minval.append(list_errs[2])
-        list_mass.append(list_errs[3])
+        list_maxval.append(list_errs[3])
+        list_mass.append(list_errs[4])
         # Printing some results
         print('= =========== TSTEP = ', tstep, "/", nstep, ' =========== =')
         maxerr = np.max(list_errs[0])
@@ -196,7 +198,7 @@ title  = 'Computed solution of the advection equation at $t =$ ' \
          + str(tstep*dt)+'\n\nwith '+func_formula
 plot_nrb_dens(X_mat, Y_mat, zn, title, show = True, save = False)
 
-plot_errors([list_err_inf, list_err_l2, list_minval, list_mass])
+plot_errors([list_err_inf, list_err_l2, list_minval, list_maxval, list_mass])
 
 ##TO SAVE RESULTS :
 # maxerr = np.max(final_errs[0])*10.
