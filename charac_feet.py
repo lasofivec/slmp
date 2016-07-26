@@ -550,18 +550,11 @@ def jacobian(geo, npat, eta1_mat, eta2_mat):
     d2F2 = np.zeros((NPTS1, NPTS2))
 
     # Getting the derivatives
-    if domain == DISK_5p_domain :
-        jacobians = jacobian_function(npat, eta1_mat, eta2_mat)
-        d1F1 = jacobians[0]
-        d2F1 = jacobians[1]
-        d1F2 = jacobians[2]
-        d2F2 = jacobians[3]
-    else :
-        D = geo[npat].evaluate_deriv(u, v, nderiv=1)
-        d1F1 = D[1, :, :, 0]
-        d2F1 = D[2, :, :, 0]
-        d1F2 = D[1, :, :, 1]
-        d2F2 = D[2, :, :, 1]
+    #D = geo[npat].evaluate_deriv(u, v, nderiv=1)
+    d1F1 = jac[npat, 0, :, :]#D[1, :, :, 0]
+    d2F1 = jac[npat, 1, :, :]#D[2, :, :, 0]
+    d1F2 = jac[npat, 2, :, :]#D[1, :, :, 1]
+    d2F2 = jac[npat, 3, :, :]#D[2, :, :, 1]
 
     # Getting rid of close to 0 values
     d1F1[np.where(abs(d1F1) <= 10 ** -14)] = 0.0

@@ -61,11 +61,11 @@ def comp_err_time(geo, X, Y, dx, dy, func_init, list_zi, list_errs, \
     list_min = []
     list_mass = []
     for npat,nrb in enumerate(geo) :
-        # Calculating the corresponding values of knots on physical space
-        Xm = dx[npat].reshape((NPTS1*NPTS2))#X - dx[npat]
-        Ym = dy[npat].reshape((NPTS1*NPTS2))#Y - dy[npat]
+        # Getting the coordinates in the pysical space
+        Xm = dx[npat].reshape((NPTS1*NPTS2))
+        Ym = dy[npat].reshape((NPTS1*NPTS2))
 
-        # Calculation the value on these points :
+        # Calculating the distrubtion func on these points :
         zm = func_init(Xm, Ym)
         z  = zm.reshape((NPTS1, NPTS2))
 

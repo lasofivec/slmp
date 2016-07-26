@@ -11,16 +11,9 @@ import interpol as inter
 from globals_variables import *
 from charac_feet import *
 from distribution_functions import initialize_distribution
-from reading_geometry import get_geometry
-from reading_geometry import get_patches
 
 
 
-# *****************************************
-# Getting the geometry and geometry's info
-
-list_patchs = get_patches(geo)
-#******************************************
 
 # *****************************************
 # Defining the distribution test function
@@ -39,55 +32,7 @@ print ""
 #============================================================#
 
 
-#-------------------------------------------
-# Defining knots and value of field on knots
-#-------------------------------------------
-eta1  = np.linspace(0., 1., NPTS1)
-eta2  = np.linspace(0., 1., NPTS2)
-z     = np.zeros((npatchs, NPTS1*NPTS2))
-X_mat = np.zeros((npatchs, NPTS1, NPTS2))
-Y_mat = np.zeros((npatchs, NPTS1, NPTS2))
 advec = np.zeros((2, npatchs, NPTS1, NPTS2))
-jac   = np.zeros((npatchs, 4, NPTS1, NPTS2))
-
-eta1_mat, eta2_mat = my_meshgrid(eta1,eta2)
-# *********************************************
-
-for npat in list_patchs :
-    # Calculating the corresponding values
-    # of knots on the physical space :
-    if domain == DISK_5p_domain:
-        D = geo[npat].evaluate_deriv(eta1,eta2, nderiv=0)
-        X_mat[npat] = D[0,:,:,0]
-        Y_mat[npat] = D[0,:,:,1]
-        # Calculation the density on these points :
-        X       = X_mat[npat].reshape((NPTS1*NPTS2))
-        Y       = Y_mat[npat].reshape((NPTS1*NPTS2))
-        z[npat] = func_init(X, Y)
-        # python has an UF for very small values of x,y at exp(x,y) :
-        z[np.where(abs(z) < 10**-9)] = 0.
-        # Computing jacobian values
-        jacobians = jacobian_function(npat, eta1_mat, eta2_mat)
-        jac[npat,0,:,:] = jacobians[0]
-        jac[npat,1,:,:] = jacobians[1]
-        jac[npat,2,:,:] = jacobians[2]
-        jac[npat,3,:,:] = jacobians[3]
-    else:
-        D = geo[npat].evaluate_deriv(eta1,eta2, nderiv=1)
-        X_mat[npat] = D[0,:,:,0]
-        Y_mat[npat] = D[0,:,:,1]
-        # Calculation the density on these points :
-        X       = X_mat[npat].reshape((NPTS1*NPTS2))
-        Y       = Y_mat[npat].reshape((NPTS1*NPTS2))
-        z[npat] = func_init(X, Y)
-        # python has an UF for very small values of x,y at exp(x,y) :
-        z[np.where(abs(z) < 10**-9)] = 0.
-        # Computing jacobian values
-        jac[npat,0,:,:] = D[1, :,:, 0]
-        jac[npat,1,:,:] = D[2, :,:, 0]
-        jac[npat,2,:,:] = D[1, :,:, 1]
-        jac[npat,3,:,:] = D[2, :,:, 1]
-
 
 #---------------------------
 #    advection definition

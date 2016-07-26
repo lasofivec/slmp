@@ -1,9 +1,7 @@
 import numpy as np
 from numpy import pi
-from globals_variables import dist_center_x
-from globals_variables import dist_center_y
 
-def initialize_distribution(name):
+def initialize_distribution(name, dist_center_x=0.5, dist_center_y=0.5):
     """ Initializes distribution function, with type defined in name.
     Args:
       name (str) : type of the distribution function."""

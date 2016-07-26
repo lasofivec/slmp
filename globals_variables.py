@@ -1,6 +1,8 @@
 import numpy as np
 import math
 from reading_geometry import get_geometry
+from reading_geometry import get_patches
+from distribution_functions import initialize_distribution
 from numpy import sin, cos, pi, sqrt
 
 import sys
@@ -26,7 +28,6 @@ advec_dir1 = 0.1
 advec_dir2 = 0.1
 # *******************************
 
-
 # Reading input File ............................
 from sys import argv
 if len(argv) > 1:
@@ -38,6 +39,23 @@ if len(argv) > 1:
 #................................................
 
 
+# *****************************************
+# Defining the distribution test function
+
+func_init = initialize_distribution(which_f, dist_center_x=dist_center_x, dist_center_y=dist_center_y)
+print "=> distribution function initialized"
+print "____________________________________"
+print ""
+# *****************************************
+
+# ***************************************
+# Definition of personal mesh grid function
+def my_meshgrid(eta1, eta2) :
+    et1, et2 = np.meshgrid(eta1, eta2)
+    return et1.transpose(), et2.transpose()
+# ***************************************
+
+
 # number of time steps
 nstep = int(math.floor(tmax/dt))
 
@@ -45,6 +63,40 @@ nstep = int(math.floor(tmax/dt))
 NPTS    = [NPTS1, NPTS2]
 geo     = get_geometry(domain)
 npatchs = geo.npatchs
+list_patchs = get_patches(geo)
+
+# Computing the physical coo & jacobian of the transformation:
+#-------------------------------------------
+# Defining knots and value of field on knots
+#-------------------------------------------
+eta1  = np.linspace(0., 1., NPTS1)
+eta2  = np.linspace(0., 1., NPTS2)
+z     = np.zeros((npatchs, NPTS1*NPTS2))
+X_mat = np.zeros((npatchs, NPTS1, NPTS2))
+Y_mat = np.zeros((npatchs, NPTS1, NPTS2))
+jac   = np.zeros((npatchs, 4, NPTS1, NPTS2))
+
+eta1_mat, eta2_mat = my_meshgrid(eta1,eta2)
+# *********************************************
+
+for npat in list_patchs :
+    # Calculating the corresponding values
+    # of knots on the physical space :
+    D = geo[npat].evaluate_deriv(eta1,eta2, nderiv=1)
+    X_mat[npat] = D[0,:,:,0]
+    Y_mat[npat] = D[0,:,:,1]
+    # Calculation the density on these points :
+    X       = X_mat[npat].reshape((NPTS1*NPTS2))
+    Y       = Y_mat[npat].reshape((NPTS1*NPTS2))
+    z[npat] = func_init(X, Y)
+    # python has an UF for very small values of x,y at exp(x,y) :
+    z[np.where(abs(z) < 10**-9)] = 0.
+    # Computing jacobian values
+    jac[npat,0,:,:] = D[1, :,:, 0]
+    jac[npat,1,:,:] = D[2, :,:, 0]
+    jac[npat,2,:,:] = D[1, :,:, 1]
+    jac[npat,3,:,:] = D[2, :,:, 1]
+
 
 name_advec = ""
 if (which_advec == 0) :
@@ -122,48 +174,7 @@ def write_globals(path, str_num) :
 
 #TODO : division of 2 integers => float ? from __future__ import division
 
-# ***************************************
-# Definition of personal mesh grid function
-# ***************************************
-def my_meshgrid(eta1, eta2) :
-    et1, et2 = np.meshgrid(eta1, eta2)
-    return et1.transpose(), et2.transpose()
 
 epsilon = 0.01
 epsilon2 = 10**-14
 
-def jacobian_function(npat, e1, e2):
-    d1F1 = np.zeros((NPTS1, NPTS2))
-    d2F1 = np.zeros((NPTS1, NPTS2))
-    d1F2 = np.zeros((NPTS1, NPTS2))
-    d2F2 = np.zeros((NPTS1, NPTS2))
-    if npat == 0:
-        d1F1 = 0.5*cos(-0.5*pi*e2-0.5*pi)
-        d2F1 = 0.5*pi*(0.5*e1+0.5)*sin(-0.5*pi*e2-0.5*pi)
-        d1F2 = 0.5*sin(-0.5*pi*e2-0.5*pi)
-        d2F2 = -0.5*pi*(0.5*e1+0.5)*cos(-0.5*pi*e2-0.5*pi)
-    elif npat == 1:
-        d1F1 = 0.5*cos(-0.5*pi*e2)
-        d2F1 = 0.5*pi*(0.5*e1+0.5)*sin(-0.5*pi*e2)
-        d1F2 = 0.5*sin(-0.5*pi*e2)
-        d2F2 = -0.5*pi*(0.5*e1+0.5)*cos(-0.5*pi*e2)
-    elif npat == 2:
-        d1F1 = -0.5*pi*(0.5*e2+0.5)*sin(0.5*pi*e1)
-        d2F1 = 0.5*cos(0.5*pi*e1)
-        d1F2 = 0.5*pi*(0.5*e2+0.5)*cos(0.5*pi*e1)
-        d2F2 = 0.5*sin(0.5*pi*e1)
-    elif npat == 3:
-        d1F1 = -0.5*pi*(0.5*e2+0.5)*sin(0.5*pi*e1+0.5*pi)
-        d2F1 = 0.5*cos(0.5*pi*e1+0.5*pi)
-        d1F2 = 0.5*pi*(0.5*e2+0.5)*cos(0.5*pi*e1+0.5*pi)
-        d2F2 = 0.5*sin(0.5*pi*e1+0.5*pi)
-    elif npat == 4:
-        sqrte1 = sqrt(1. - 0.5*(2.*e1-1.)**2)
-        sqrte2 = sqrt(1. - 0.5*(2.*e2-1.)**2)
-        e1e2 = (2.*e1-1.)*(2.*e2-1.)
-        d1F1 =  0.5/sqrt(2.)*(e1e2/sqrte1 - 2.*sqrte2)
-        d2F1 = -0.5/sqrt(2.)*(2.*sqrte1 - e1e2/sqrte2)
-        d1F2 = -0.5/sqrt(2.)*(e1e2/sqrte1 + 2.*sqrte2)
-        d2F2 =  0.5/sqrt(2.)*(2.*sqrte1 + e1e2/sqrte2)
-    return [d1F1, d2F1, d1F2, d2F2]
-    
