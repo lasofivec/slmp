@@ -383,8 +383,8 @@ def contain_particles(eta1_mat, eta2_mat, advec_coeffs, eta1_orig, eta2_orig, wh
                 
         if np.size(where_out) > 0:
             where_orig = where_char[where_out]
-            print "wnd", where_not_dirichlet
-            print "lip", list_pats
+            # print "mmm_wnd", where_not_dirichlet
+            # print "mmm_lip", list_pats
             list_pats2 = [list_pats[val0] for index0, val0 in enumerate(where_not_dirichlet)]
             where_char[where_out] = list_pats2
 

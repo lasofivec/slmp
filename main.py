@@ -232,7 +232,7 @@ for tstep in range(1,nstep+1) :
                                                                     eta1_slopes[npat_char],
                                                                     eta2_slopes[npat_char])
     zn = np.copy(znp1)
-    zn[np.where(zn < 10**-10)] = 0.
+    zn[np.where(abs(zn) < 10**-10)] = 0.
 
 
     # -----------------------------------------------
@@ -259,10 +259,17 @@ for tstep in range(1,nstep+1) :
 
 
 # -------------------------------------------
-# Computing exact solution and plotting error : 
+# Computing exact solution and plotting error :
 Xnp1, Ynp1 = get_phy_char(X_mat, Y_mat, npatchs, advec, which_advec, tstep, dt)
-comp_err_time(geo, X_mat, Y_mat, Xnp1, Ynp1, func_init, listZ, list_errs, show = True, plot = False, save = True, tval = tstep)
-title  = 'Computed solution of the advection equation at $t =$ ' + str(tstep*dt)+'\n\nwith '+func_formula
+comp_err_time(geo, \
+              X_mat, Y_mat, \
+              Xnp1, Ynp1,
+              func_init,
+              listZ, list_errs,
+              show = True, plot = False,
+              save = True, tval = tstep)
+title  = 'Computed solution of the advection equation at $t =$ ' \
+         + str(tstep*dt)+'\n\nwith '+func_formula
 plot_nrb_dens(X_mat, Y_mat, zn, title, show = True, save = False)
 
 plot_errors([list_err_inf, list_err_l2, list_minval, list_mass])
