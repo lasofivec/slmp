@@ -13,21 +13,23 @@ NPTS2 = 100
 # *********************************************
 # Definition of simulation
 # *********************************************
-tmax = 8.5
-dt   = 0.04
+tmax = 25.
+dt   = 0.2
 viewstep = 10
 
 # *********************************************
 # Definition of initial distribution
 # *********************************************
 which_f = "GAUSSIAN_DISTRIBUTION" 
-dist_center_x = -0.8
-dist_center_y = -0.15
+dist_center_x = -0.65
+dist_center_y = 0.4
 
 # *********************************************
 # Definition of advection coefficient
 # *********************************************
 which_advec = ADVEC_CNST
+advec_dir1 = -0.
+advec_dir2 = -0.025
 
 #**********************************************
 # Definition of derivative approximation

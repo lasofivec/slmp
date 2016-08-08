@@ -34,5 +34,5 @@ advec_dir2 = -0.025
 #**********************************************
 # Definition of derivative approximation
 # *********************************************
-which_deriv  = 0#DERIV_LGC4
+which_deriv  = DERIV_LGC4
 which_interp = INTER_SCI1 
