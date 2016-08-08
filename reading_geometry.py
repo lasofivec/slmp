@@ -3,7 +3,7 @@ def get_geometry(domain):
     Args:
       domain(str) : type of domain to open."""
     if (domain == 0) :
-        ls_domain = "../domains/2squares_inv.xml"#n64x64_p3x3.xml"
+        ls_domain = "../domains/2squares_inv.xml"
         import caid.cad_geometry as cg
         geo = cg.cad_geometry(ls_domain)
     elif (domain == 1) :
@@ -17,7 +17,7 @@ def get_geometry(domain):
         import caid.cad_geometry as cg
         geo = cg.cad_geometry(ls_domain)
     elif (domain == 3) :
-        ls_domain = "../domains/pinched_Disk-5mp_n32x32_p3x3.xml"
+        ls_domain = "../domains/pinched_disk_5mp.xml"
         import caid.cad_geometry as cg
         geo = cg.cad_geometry(ls_domain)
     elif (domain == 4) :
