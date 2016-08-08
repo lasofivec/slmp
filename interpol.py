@@ -212,9 +212,10 @@ def finite_diff_external_ctr(data, face, data_down, face_down, \
     # Determining sense:
     corner_indx = sense * -1
     # We want to compute derivative on eta1
-    # Let's compute f_{i+1} :
     val_edg = get_face(data, face)
+    # Let's compute f_{i+1} :
     fip1[:-1] = val_edg[1:]
+    # TODO: should indx = 1, 2 or 0, 1 ???
     fip1[-1] = get_face(data_down, face_down, indx=1)[corner_indx]
     # Let's compute f_{i+2} :
     fip2[:-2] = val_edg[2:]
@@ -376,15 +377,15 @@ def compute_slopes(tab, list_patchs, jac):
     norms = mapping_norms(list_patchs, jac)
     
     for npat in list_patchs:
-        if DEBUG_MODE:
-            print "............... For patch ",npat," .............."
+        #if DEBUG_MODE:
+        print "............... For patch ",npat," .............."
         deriv_npat = derivatives[npat]
         norms_npat = norms[npat]
 
         for face in range(4):
 
-            if DEBUG_MODE:
-                print "............. Face", face
+            #if DEBUG_MODE:
+            print "............. Face", face
 
             deriv_face = deriv_npat[face]
 
@@ -395,21 +396,25 @@ def compute_slopes(tab, list_patchs, jac):
                 gradF1 = norms_face[0]
                 gradF2 = norms_face[1]
 
-                if DEBUG_MODE:
-                    print "******* grad F1 *********"
-                    print gradF1
-                    print "******* grad F2 *********"
-                    print gradF2
+                #                if DEBUG_MODE:
+                print "******* grad F1 *********"
+                print gradF1
+                print "******* grad F2 *********"
+                print gradF2
                 
 
                 if (face == 0):
-                    eta2_slopes[npat, 0] = deriv_face[0] * gradF2[0] + deriv_face[1] * gradF2[1]
+                    eta2_slopes[npat, 0] = \
+                        deriv_face[0] * gradF2[0] + deriv_face[1] * gradF2[1]
                 elif (face == 1):
-                    eta1_slopes[npat, 0] = deriv_face[0] * gradF1[0] + deriv_face[1] * gradF1[1]
+                    eta1_slopes[npat, 0] = \
+                        deriv_face[0] * gradF1[0] + deriv_face[1] * gradF1[1]
                 elif (face == 2):
-                    eta2_slopes[npat, 1] = deriv_face[0] * gradF2[0] + deriv_face[1] * gradF2[1]
+                    eta2_slopes[npat, 1] = \
+                        deriv_face[0] * gradF2[0] + deriv_face[1] * gradF2[1]
                 elif (face == 3):
-                    eta1_slopes[npat, 1] = deriv_face[0] * gradF1[0] + deriv_face[1] * gradF1[1]
+                    eta1_slopes[npat, 1] = \
+                        deriv_face[0] * gradF1[0] + deriv_face[1] * gradF1[1]
             elif (which_deriv == 0) :
                 if face == 0:
                     eta2_slopes[npat, 0] = deriv_face[1]
