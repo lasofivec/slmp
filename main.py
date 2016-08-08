@@ -1,34 +1,23 @@
 #! /usr/bin/python
-from geometry import *
+from geometry import z, X_mat, Y_mat, jac, eta1, eta2, func_init, geo, npatchs, list_patchs
 from scipy.sparse.linalg import spsolve, splu
 from scipy.interpolate import interp2d
 from scipy.io import mmread, mmwrite
 import igakit.nurbs as nurbs
 from scipy import interpolate
-#from geometries_xml import patch
 from math import pi
 from post_evaluation import *
 import interpol as inter
 from globals_variables import *
 from charac_feet import *
+import math
 
-
-
-
-
-#============================================================#
-#                                                            #
-#                METHODE SEMI-LAGRANGIENNE                   #
-#                                                            #
-#============================================================#
-
-
-advec = np.zeros((2, npatchs, NPTS1, NPTS2))
 
 
 #---------------------------
 #    advection definition
 #---------------------------
+advec = np.zeros((2, npatchs, NPTS1, NPTS2))
 if (which_advec == 0) :
     #    for a scalar advection :
     advec[0] = advec_dir1 #advection in 1st direction for all patches
@@ -52,58 +41,21 @@ zn   = np.zeros((npatchs, NPTS1, NPTS2))
 znp1 = np.zeros((npatchs, NPTS1, NPTS2))
 zn   = np.copy(z).reshape((npatchs, NPTS1, NPTS2))
 
-
 # Plotting the initial state ***************************
 plot_nrb_dens(X_mat, Y_mat, zn, func_formula, \
                show=True, save=True, tstep = -1)
 # ******************************************************
 
+
+#============================================================#
+#                                                            #
+#                METHODE SEMI-LAGRANGIENNE                   #
+#                                                            #
+#============================================================#
+
+
 # Computing the characteristics' origin
 char_eta1, char_eta2, where_char = get_pat_char(geo, eta1, eta2, advec, dt)
-
-print np.shape(char_eta1)
-import numpy
-XXmat = numpy.zeros_like(char_eta1)
-YYmat = numpy.zeros_like(char_eta2)
-for npat in range(npatchs):
-    for ii in range(numpy.shape(char_eta1)[1]):
-        # if numpy.shape(numpy.shape(char_eta1))[0] == 2 :
-        for jj in range(numpy.shape(char_eta1)[2]):
-            ee1 = char_eta1[npat][ii,jj]
-            ee2 = char_eta2[npat][ii,jj]
-            nnp = where_char[npat][ii,jj]
-            D = geo[nnp].evaluate_deriv(ee1, ee2, nderiv=0)
-            XXmat[npat,ii,jj] = D[0,0,0,0]
-            YYmat[npat,ii,jj] = D[0,0,0,1]
-    # else :
-    #     ee1 = char_eta1[ii]
-    #     ee2 = char_eta2[ii]
-    #     nnp = where_char[ii]
-    #     D = geo[nnp].evaluate_deriv(ee1, ee2, nderiv=0)
-    #     XXmat[ii] = D[0,0,0,0]
-    #     YYmat[ii] = D[0,0,0,1]
-
-if DEBUG_MODE:
-    npat = 0
-    print "................", npat, "................"
-    print "................ X ..............."
-    print X_mat[npat]#-0.005-XXmat
-    print "................ Y ..............."
-    print Y_mat[npat]#-0.005-YYmat
-    print "................ E1 char ..............."
-    print char_eta1[npat]
-    print "................ E2 char ..............."
-    print char_eta2[npat]
-    print "................ where ............."
-    print where_char[npat]
-    # print "................ Jac ..............."
-    # print jac[npat]
-    print "................ X adv (=F1(E1,E2))..............."
-    print XXmat[npat]
-    print "................ Y adv (=F1(E1,E2))..............."
-    print YYmat[npat]
-
-
     
 # Extracting the particles that stay in their own domain:
 char_eta1_id = np.copy(char_eta1)
@@ -123,6 +75,10 @@ list_minval  = []
 list_maxval  = []
 list_mass    = []
 
+print "For pat 4 face 1 =", inter.get_face(zn[4], 1)
+print "For pat 4 face 2 =", inter.get_face(zn[4], 2)
+
+
 # ......................................................
 from selalib_interpol import mp_int
 
@@ -130,35 +86,57 @@ for tstep in range(1,nstep+1) :
 
     # Computing the limit conditions :
     eta1_slopes, eta2_slopes = inter.compute_slopes(zn, list_patchs, jac)
-
+    STOP
     for npat in list_patchs :
+        znp1[npat] = 0.
         # Interpolation on points that stay IN the domain :
-        znp1[npat] = mp_int.interpolate_2d(npat, zn[npat],
+        znp1[npat] = mp_int.interpolate_2d(zn[npat],
                                            char_eta1_id[npat],
                                            char_eta2_id[npat],
                                            eta1_slopes[npat],
                                            eta2_slopes[npat])
+
         if np.size(np.where(np.abs(znp1) > 10**5)) > 0:
             print "Gigantic value !!", np.where(np.abs(znp1) > 10**5)
-            # import sys
-            # sys.exit("Error !!")
+            import sys
+            sys.exit("Error !!")
 
-        pat_out_char = tab_ind_out[npat]
+        if np.isnan(znp1[npat]).any() :
+            print "NaN value found !!!! in Pat", npat
+            print znp1[npat]
+            www = np.where(np.isnan(znp1[npat]) == True)
+            # print "where =", www
+            #print "znp1[where] =", znp1[npat][www]
+            print "zn     =", zn[npat]
+            print "char 1 =", char_eta1_id[npat]
+            print "char 2 =", char_eta2_id[npat]
+            print "slope1 =", eta1_slopes[npat]
+            print "slope2 =", eta2_slopes[npat]
+            import sys
+            sys.exit("Error !!")
+        
 
-        # Interpolation on points that are OUTSIDE the domain (has to be done point by point):
-        for ind_pt_out in range(np.size(pat_out_char[0])):
-            ind_eta1 = pat_out_char[0][ind_pt_out]
-            ind_eta2 = pat_out_char[1][ind_pt_out]
-            npat_char = where_char[npat][ind_eta1, ind_eta2]
-            znp1[npat, ind_eta1, ind_eta2] = mp_int.f2py_interpolate_value(npat_char,
-                                                                    char_eta1[npat, ind_eta1, ind_eta2],
-                                                                    char_eta2[npat, ind_eta1, ind_eta2],
-                                                                    zn[npat_char],
-                                                                    eta1_slopes[npat_char],
-                                                                    eta2_slopes[npat_char])
+        # pat_out_char = tab_ind_out[npat]
+
+        # # Interpolation on points that are OUTSIDE the domain (has to be done point by point):
+        # for ind_pt_out in range(np.size(pat_out_char[0])):
+        #     ind_eta1 = pat_out_char[0][ind_pt_out]
+        #     ind_eta2 = pat_out_char[1][ind_pt_out]
+        #     npat_char = where_char[npat][ind_eta1, ind_eta2]
+        #     znp1[npat, ind_eta1, ind_eta2] = mp_int.interpolate_value(
+        #         char_eta1[npat, ind_eta1, ind_eta2],
+        #         char_eta2[npat, ind_eta1, ind_eta2],
+        #         zn[npat_char],
+        #         eta1_slopes[npat_char],
+        #         eta2_slopes[npat_char])
     zn = np.copy(znp1)
     zn[np.where(abs(zn) < 10**-10)] = 0.
 
+    print "tstep =", tstep
+    print "For pat 4 face 1 =", inter.get_face(zn[4], 1)[-3:]
+    print "For pat 4 face 2 =", inter.get_face(zn[4], 2)[:3]
+    print "For pat 3 face 0 =", inter.get_face(zn[3], 0)[:3]
+    print "For pat 2 face 0 =", inter.get_face(zn[2], 0)[-3:]
 
     # -----------------------------------------------
     # Printing of results and time-relative error
@@ -182,6 +160,7 @@ for tstep in range(1,nstep+1) :
         maxerr = np.max(list_errs[0])
         npat_maxerr = list_errs[0].index(np.max(list_errs[0]))
         print(" --> For npat =", npat_maxerr, " maximum err l_inf =", maxerr)
+
 
 
 # -------------------------------------------
