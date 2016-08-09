@@ -32,7 +32,6 @@ advec_dir1 = -0.
 advec_dir2 = -0.025
 
 #**********************************************
-# Definition of derivative approximation
+# Definition of interpolation method used
 # *********************************************
-which_deriv  = 0#DERIV_LGC4
 which_interp = INTER_SLL3 

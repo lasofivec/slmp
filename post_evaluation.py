@@ -199,7 +199,6 @@ def plot_errors(list_errs):
     # str_num = str(NPTS1)+'_'+str(NPTS2) 
     # path = "results/errors/space_disc"
     # #if comparing derivative approximation
-    # str_num = str(which_deriv)
     # path = "results/errors"
     # #if comparing interpolation method
     if (which_interp == 0) :

@@ -28,7 +28,6 @@ dist_center_y = 0.25
 which_advec = ADVEC_CNST
 
 #**********************************************
-# Definition of derivative approximation
+# Definition of interpolation method used
 # *********************************************
-which_deriv  = DERIV_LGU4
 which_interp = INTER_SLL3 

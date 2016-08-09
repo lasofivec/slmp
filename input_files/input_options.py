@@ -48,16 +48,6 @@ ADVEC_UCIR = 2 # un centered circular advection
 # centera = -0.1 # For ADVEC_UCIR
 # centerb = 0.0 # For ADVEC_UCIR
 
-
-# Method of derivative approximation:
-# Determines the formula to calculate the derivatives used
-# for the BC. So far the best results have been obtained used which_deriv = 1
-DERIV_FDC2 = 0 # Finite Difference method Centered of order 2
-DERIV_FDU2 = 1 # Finite Difference method Uncentered of order 2
-DERIV_LGU4 = 2 # Lagrangian Uncentered method of order 4
-DERIV_LGC4 = 3 # Lagrangian Centered method of order 4
-DERIV_NPG2 = 4 # Numpy Gradient function of order 2
-
 # Method of interpolation:
 INTER_SLL3 = 0 # selalib cubic spline method
 INTER_SCI1 = 1 # python's scipy linear  spline interpolator

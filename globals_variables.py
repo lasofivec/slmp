@@ -27,7 +27,6 @@ which_f = DIST_GAUSS
 dist_center_x = 0.5
 dist_center_y = 0.5
 which_advec = ADVEC_CNST
-which_deriv = DERIV_FDU2
 which_interp = INTER_SLL3
 DEBUG_MODE = False
 advec_dir1 = 0.1
@@ -61,19 +60,7 @@ elif (which_advec == 2) :
     centerb =  0.0
 name_advec = name_advec + " (" + str(which_advec) + ")"
 
-name_deriv = ""
-if (which_deriv == 0) :
-    name_deriv = "Appx derivative method : Finite difference centered order 2"
-elif (which_deriv == 1) :
-    name_deriv = "Appx derivative method : Finite difference uncentered order 2"
-elif (which_deriv == 2) :
-    name_deriv = "Appx derivative method : Lagrangian uncentered order 4"
-elif (which_deriv == 3) :
-    name_deriv = "Appx derivative method : Lagrangian centered order 4"
-elif (which_deriv == 4) :
-    name_deriv = "Appx derivative method : Numpy gradient function order 2"
-name_deriv = name_deriv + " (" + str(which_deriv) + ")"
-
+name_deriv = "Method to compute Hermite slopes : Cubic spline approximation"
 
 #-------------------
 # data printing
@@ -83,7 +70,6 @@ print " **", name_advec, " **"
 print " **", name_deriv, " **"
 print " NPTS1, NPTS2 =", NPTS1, NPTS2
 print " dt = ", dt
-
 
 #--------------------
 # plotting data
@@ -112,7 +98,6 @@ def write_globals(path, str_num) :
      f.write("Domain = " + str(domain)+'\n')
      f.write('which_f = ' + str(which_f)+'\n')
      f.write('which_advec = ' + str(which_advec)+'\n')
-     f.write('which_deriv = ' + str(which_deriv)+'\n')
      f.write('NPTS1 = '+ str(NPTS1)+'\n')
      f.write('NPTS2 = '+ str(NPTS2)+'\n')
      f.write('tmax = '+ str(tmax)+'\n')
