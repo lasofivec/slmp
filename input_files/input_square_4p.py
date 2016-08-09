@@ -5,8 +5,8 @@ from input_options import *
 # *********************************************
 domain = SQUARE_4p_domain
 # Discretization:
-NPTS1 = 32
-NPTS2 = 32
+NPTS1 = 100
+NPTS2 = 100
 
 # *********************************************
 # Definition of simulation

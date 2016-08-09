@@ -7,7 +7,8 @@ import igakit.nurbs as nurbs
 from scipy import interpolate
 from math import pi
 from post_evaluation import *
-import interpol as inter
+import connectivity as conn
+import derivatives as deriv
 from globals_variables import *
 from charac_feet import *
 import math
@@ -75,9 +76,6 @@ list_minval  = []
 list_maxval  = []
 list_mass    = []
 
-print "For pat 4 face 1 =", inter.get_face(zn[4], 1)
-print "For pat 4 face 2 =", inter.get_face(zn[4], 2)
-
 
 # ......................................................
 from selalib_interpol import mp_int
@@ -85,8 +83,8 @@ from selalib_interpol import mp_int
 for tstep in range(1,nstep+1) :
 
     # Computing the limit conditions :
-    eta1_slopes, eta2_slopes = inter.compute_slopes(zn, list_patchs, jac)
-    STOP
+    eta1_slopes, eta2_slopes = deriv.compute_slopes(zn, list_patchs, jac)
+
     for npat in list_patchs :
         znp1[npat] = 0.
         # Interpolation on points that stay IN the domain :
@@ -116,27 +114,22 @@ for tstep in range(1,nstep+1) :
             sys.exit("Error !!")
         
 
-        # pat_out_char = tab_ind_out[npat]
+        pat_out_char = tab_ind_out[npat]
 
-        # # Interpolation on points that are OUTSIDE the domain (has to be done point by point):
-        # for ind_pt_out in range(np.size(pat_out_char[0])):
-        #     ind_eta1 = pat_out_char[0][ind_pt_out]
-        #     ind_eta2 = pat_out_char[1][ind_pt_out]
-        #     npat_char = where_char[npat][ind_eta1, ind_eta2]
-        #     znp1[npat, ind_eta1, ind_eta2] = mp_int.interpolate_value(
-        #         char_eta1[npat, ind_eta1, ind_eta2],
-        #         char_eta2[npat, ind_eta1, ind_eta2],
-        #         zn[npat_char],
-        #         eta1_slopes[npat_char],
-        #         eta2_slopes[npat_char])
+        # Interpolation on points that are OUTSIDE the domain (has to be done point by point):
+        for ind_pt_out in range(np.size(pat_out_char[0])):
+            ind_eta1 = pat_out_char[0][ind_pt_out]
+            ind_eta2 = pat_out_char[1][ind_pt_out]
+            npat_char = where_char[npat][ind_eta1, ind_eta2]
+            znp1[npat, ind_eta1, ind_eta2] = mp_int.interpolate_value(
+                char_eta1[npat, ind_eta1, ind_eta2],
+                char_eta2[npat, ind_eta1, ind_eta2],
+                zn[npat_char],
+                eta1_slopes[npat_char],
+                eta2_slopes[npat_char])
+
     zn = np.copy(znp1)
     zn[np.where(abs(zn) < 10**-10)] = 0.
-
-    print "tstep =", tstep
-    print "For pat 4 face 1 =", inter.get_face(zn[4], 1)[-3:]
-    print "For pat 4 face 2 =", inter.get_face(zn[4], 2)[:3]
-    print "For pat 3 face 0 =", inter.get_face(zn[3], 0)[:3]
-    print "For pat 2 face 0 =", inter.get_face(zn[2], 0)[-3:]
 
     # -----------------------------------------------
     # Printing of results and time-relative error

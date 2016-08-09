@@ -13,7 +13,7 @@ NPTS2 = 100
 # *********************************************
 # Definition of simulation
 # *********************************************
-tmax = 10.
+tmax = 13.
 dt   = 0.75
 viewstep = 1
 
@@ -21,7 +21,7 @@ viewstep = 1
 # Definition of initial distribution
 # *********************************************
 which_f = "GAUSSIAN_DISTRIBUTION" 
-dist_center_x = 0.5
+dist_center_x = 0.25
 dist_center_y = 0.5
 
 # *********************************************

@@ -147,8 +147,9 @@ def plot_errors(list_errs):
             mass_val += list_mass[tstep][n]
         list_emt_inf.append(max_err_inf)
         list_emt_l2.append(max_err_l2)
+        print "min val =", min_val
         list_emt_min.append(min_val)
-        list_emt_max.append(1.-max_val)
+        list_emt_max.append((1.-max_val)/NPTS1/NPTS2)
         list_emt_mass.append(mass_val)
     list_emt_mass = [e - list_emt_mass[0] for e in list_emt_mass]
 
@@ -172,6 +173,7 @@ def plot_errors(list_errs):
     #    ppl.legend(ax, loc='upper left')
     pl.plot(list_tmp, list_emt_min, '-')
     pl.plot(list_tmp, list_emt_max, '--')
+    pl.legend(["min", "(1-max)/$N_1$/$N_2$"], loc='best')
     # *** Saving image :
     fig.savefig("results/results_figures/Minval_over_time.eps", \
                 format='eps', dpi=1000, facecolor='w', edgecolor='none')

@@ -13,7 +13,7 @@ NPTS2 = 40
 # *********************************************
 # Definition of simulation
 # *********************************************
-tmax = 1.4
+tmax = 15
 dt   = 0.1
 viewstep = 10
 
@@ -28,8 +28,8 @@ dist_center_y = 0.2
 # Definition of advection coefficient
 # *********************************************
 which_advec = ADVEC_CNST
-advec_dir1 = -0.
-advec_dir2 = -0.025
+advec_dir1 = 0.05
+advec_dir2 = -0.05
 
 #**********************************************
 # Definition of derivative approximation

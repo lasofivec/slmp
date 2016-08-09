@@ -1,7 +1,7 @@
 from globals_variables import *
 from geometry import npatchs
 from geometry import jac
-import interpol as inter
+import connectivity as conn
 
 
 # ============================================================
@@ -240,7 +240,7 @@ def contain_particles(eta1_mat, eta2_mat, advec_coeffs, eta1_orig, eta2_orig, wh
         eta2_orig[where_out] = eta2_mat[where_out] - current_percent * advec_coef2[where_out]
 
         # Looking for the neigh. patch and transforming the coord to that patch
-        [list_pats, list_faces]= inter.connectivity(where_char[where_out], 1)
+        [list_pats, list_faces]= conn.connectivity(where_char[where_out], 1)
         
         # We treat external external boundary conditions here, ie when [npat, face] = [npat', face']
         where_not_dirichlet = np.where((where_char[where_out] != list_pats) & (np.asarray(list_faces) != 1))[0]
@@ -256,10 +256,10 @@ def contain_particles(eta1_mat, eta2_mat, advec_coeffs, eta1_orig, eta2_orig, wh
             where_char[where_out] = list_pats2
 
             [eta1_out_xmin, eta2_out_xmin] = \
-                inter.transform_patch_coordinates(eta2_orig[where_out], list_faces)
+                conn.transform_patch_coordinates(eta2_orig[where_out], list_faces)
             
             [advec1, advec2] = \
-                inter.transform_advection(advec_coef1[where_out], advec_coef2[where_out], where_orig, where_char[where_out], eta1_orig[where_out], eta2_orig[where_out], eta1_out_xmin, eta2_out_xmin)
+                conn.transform_advection(advec_coef1[where_out], advec_coef2[where_out], where_orig, where_char[where_out], eta1_orig[where_out], eta2_orig[where_out], eta1_out_xmin, eta2_out_xmin)
             
             # We get the origin point
             eta1_orig[where_out] = eta1_out_xmin
@@ -315,7 +315,7 @@ def contain_particles(eta1_mat, eta2_mat, advec_coeffs, eta1_orig, eta2_orig, wh
         eta2_orig[where_out] = eta2_mat[where_out] - current_percent * advec_coef2[where_out]
 
         # Looking for the neighbouring patch and transforming the coordinates to that patch
-        [list_pats, list_faces]= inter.connectivity(where_char[where_out], 3)
+        [list_pats, list_faces]= conn.connectivity(where_char[where_out], 3)
 
         # We treat external external boundary conditions here, ie when [npat, face] = [npat', face']
         where_not_dirichlet = np.where((where_char[where_out] != list_pats) & (np.asarray(list_faces) != 3))[0]
@@ -330,10 +330,10 @@ def contain_particles(eta1_mat, eta2_mat, advec_coeffs, eta1_orig, eta2_orig, wh
             list_pats2 = [list_pats[val0] for index0, val0 in enumerate(where_not_dirichlet)]
             where_char[where_out] = list_pats
             [eta1_out_xmin, eta2_out_xmin] = \
-                inter.transform_patch_coordinates(eta2_orig[where_out], list_faces)
+                conn.transform_patch_coordinates(eta2_orig[where_out], list_faces)
 
             [advec1, advec2] = \
-                inter.transform_advection(advec_coef1[where_out], advec_coef2[where_out], where_orig, where_char[where_out], eta1_orig[where_out], eta2_orig[where_out], eta1_out_xmin, eta2_out_xmin)
+                conn.transform_advection(advec_coef1[where_out], advec_coef2[where_out], where_orig, where_char[where_out], eta1_orig[where_out], eta2_orig[where_out], eta1_out_xmin, eta2_out_xmin)
 
             # We get the origin point
             eta1_orig[where_out] = eta1_out_xmin
@@ -373,7 +373,7 @@ def contain_particles(eta1_mat, eta2_mat, advec_coeffs, eta1_orig, eta2_orig, wh
         eta2_orig[where_out] = 0.
         
         # Looking for the neighbouring patch and transforming the coordinates to that patch
-        [list_pats, list_faces] = inter.connectivity(where_char[where_out], 0)
+        [list_pats, list_faces] = conn.connectivity(where_char[where_out], 0)
 
         # We treat external external boundary conditions here, ie when [npat, face] = [npat', face']
         where_not_dirichlet = np.where((where_char[where_out] != list_pats) & (np.asarray(list_faces) != 0))[0]
@@ -391,10 +391,10 @@ def contain_particles(eta1_mat, eta2_mat, advec_coeffs, eta1_orig, eta2_orig, wh
             where_char[where_out] = list_pats2
 
             [eta1_out_xmin, eta2_out_xmin] = \
-                inter.transform_patch_coordinates(eta1_orig[where_out], list_faces)
+                conn.transform_patch_coordinates(eta1_orig[where_out], list_faces)
 
             [advec1, advec2] = \
-                inter.transform_advection(advec_coef1[where_out], advec_coef2[where_out], where_orig, where_char[where_out], eta1_orig[where_out], eta2_orig[where_out], eta1_out_xmin, eta2_out_xmin)
+                conn.transform_advection(advec_coef1[where_out], advec_coef2[where_out], where_orig, where_char[where_out], eta1_orig[where_out], eta2_orig[where_out], eta1_out_xmin, eta2_out_xmin)
 
             # We get the origin point
             eta1_orig[where_out] = eta1_out_xmin
@@ -431,7 +431,7 @@ def contain_particles(eta1_mat, eta2_mat, advec_coeffs, eta1_orig, eta2_orig, wh
         eta2_orig[where_out] = 1.
 
         # Looking for the neighbouring patch and transforming the coordinates to that patch
-        [list_pats, list_faces] = inter.connectivity(where_char[where_out], 2)
+        [list_pats, list_faces] = conn.connectivity(where_char[where_out], 2)
 
         # We treat external external boundary conditions here, ie when [npat, face] = [npat', face']
         where_not_dirichlet = np.where((where_char[where_out] != list_pats) & (np.asarray(list_faces) != 2))[0]
@@ -447,10 +447,10 @@ def contain_particles(eta1_mat, eta2_mat, advec_coeffs, eta1_orig, eta2_orig, wh
             where_char[where_out] = list_pats2
 
             [eta1_out_xmin, eta2_out_xmin] = \
-                inter.transform_patch_coordinates(eta1_orig[where_out], list_faces)
+                conn.transform_patch_coordinates(eta1_orig[where_out], list_faces)
             
             [advec1, advec2] = \
-                inter.transform_advection(advec_coef1[where_out], advec_coef2[where_out], where_orig, where_char[where_out], eta1_orig[where_out], eta2_orig[where_out], eta1_out_xmin, eta2_out_xmin)
+                conn.transform_advection(advec_coef1[where_out], advec_coef2[where_out], where_orig, where_char[where_out], eta1_orig[where_out], eta2_orig[where_out], eta1_out_xmin, eta2_out_xmin)
 
             # We get the origin point
             eta1_orig[where_out] = eta1_out_xmin
