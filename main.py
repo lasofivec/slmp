@@ -1,5 +1,5 @@
 #! /usr/bin/python
-from geometry import z, X_mat, Y_mat, jac, eta1, eta2, func_init, geo, npatchs, list_patchs
+from geometry import z, X_mat, Y_mat, jac, eta1, eta2, npatchs, list_patchs
 from scipy.sparse.linalg import spsolve, splu
 from scipy.interpolate import interp2d
 from scipy.io import mmread, mmwrite
@@ -43,8 +43,7 @@ znp1 = np.zeros((npatchs, NPTS1, NPTS2))
 zn   = np.copy(z).reshape((npatchs, NPTS1, NPTS2))
 
 # Plotting the initial state ***************************
-plot_nrb_dens(X_mat, Y_mat, zn, func_formula, \
-               show=True, save=True, tstep = -1)
+plot_nrb_dens(zn, show=True, save=True, tstep = 0)
 # ******************************************************
 
 
@@ -56,8 +55,10 @@ plot_nrb_dens(X_mat, Y_mat, zn, func_formula, \
 
 
 # Computing the characteristics' origin
-char_eta1, char_eta2, where_char = get_pat_char(geo, eta1, eta2, advec, dt)
-    
+char_eta1, char_eta2, where_char = get_pat_char(eta1, eta2, advec, dt)
+
+
+
 # Extracting the particles that stay in their own domain:
 char_eta1_id = np.copy(char_eta1)
 char_eta2_id = np.copy(char_eta2)
@@ -67,7 +68,6 @@ for npat in list_patchs:
     tab_ind_out.append(ind_out_pat)
     char_eta1_id[npat][ind_out_pat] = 0.0
     char_eta2_id[npat][ind_out_pat] = 0.0
-
 
 # arrays for storing the errors :
 list_err_inf = []
@@ -94,29 +94,19 @@ for tstep in range(1,nstep+1) :
                                            eta1_slopes[npat],
                                            eta2_slopes[npat])
 
-        if np.size(np.where(np.abs(znp1) > 10**5)) > 0:
-            print "Gigantic value !!", np.where(np.abs(znp1) > 10**5)
+        if np.size(np.where(np.abs(znp1[npat]) > 10**5)) > 0:
+            print "Gigantic value !! in Pat ", npat
             import sys
             sys.exit("Error !!")
 
         if np.isnan(znp1[npat]).any() :
-            print "NaN value found !!!! in Pat", npat
-            print znp1[npat]
-            www = np.where(np.isnan(znp1[npat]) == True)
-            # print "where =", www
-            #print "znp1[where] =", znp1[npat][www]
-            print "zn     =", zn[npat]
-            print "char 1 =", char_eta1_id[npat]
-            print "char 2 =", char_eta2_id[npat]
-            print "slope1 =", eta1_slopes[npat]
-            print "slope2 =", eta2_slopes[npat]
+            print "NaN value found !!!! in Pat ", npat
             import sys
             sys.exit("Error !!")
-        
 
+        # Interpolation on points that are OUTSIDE the domain
+        # (has to be done point by point):
         pat_out_char = tab_ind_out[npat]
-
-        # Interpolation on points that are OUTSIDE the domain (has to be done point by point):
         for ind_pt_out in range(np.size(pat_out_char[0])):
             ind_eta1 = pat_out_char[0][ind_pt_out]
             ind_eta2 = pat_out_char[1][ind_pt_out]
@@ -136,13 +126,12 @@ for tstep in range(1,nstep+1) :
     #------------------------------------------------
     if ((tstep == 1)or(tstep%viewstep == 0)or(tstep == nstep-1)) :
         # Plotting the density ***************************
-        title  = 'Computed solution of the advection equation at $t =$ ' + str(tstep)+'\n\nwith '+func_formula
-        listZ = plot_nrb_dens(X_mat, Y_mat, zn, title, show = False, save = True, tstep = tstep)
+        listZ = plot_nrb_dens(zn, tstep = tstep)
         # Computing error ***********
         # Computing the characteristic feet in PHYSICAL space at tnp1 :
-        Xnp1, Ynp1 = get_phy_char(X_mat, Y_mat, npatchs, advec, which_advec, tstep, dt)
+        Xnp1, Ynp1 = get_phy_char(npatchs, advec, which_advec, tstep, dt)
         list_errs = []
-        comp_err_time(geo, X_mat, Y_mat, Xnp1, Ynp1, func_init, listZ, list_errs, plot = True, save=True, tval = tstep)
+        comp_err_time(Xnp1, Ynp1, listZ, list_errs, tval = tstep)
         list_err_inf.append(list_errs[0])
         list_err_l2.append(list_errs[1])
         list_minval.append(list_errs[2])
@@ -158,17 +147,12 @@ for tstep in range(1,nstep+1) :
 
 # -------------------------------------------
 # Computing exact solution and plotting error :
-Xnp1, Ynp1 = get_phy_char(X_mat, Y_mat, npatchs, advec, which_advec, tstep, dt)
-comp_err_time(geo, \
-              X_mat, Y_mat, \
-              Xnp1, Ynp1,
-              func_init,
+Xnp1, Ynp1 = get_phy_char(npatchs, advec, which_advec, tstep, dt)
+comp_err_time(Xnp1, Ynp1, \
               listZ, list_errs,
               show = True, plot = False,
-              save = True, tval = tstep)
-title  = 'Computed solution of the advection equation at $t =$ ' \
-         + str(tstep*dt)+'\n\nwith '+func_formula
-plot_nrb_dens(X_mat, Y_mat, zn, title, show = True, save = False)
+              tval = tstep)
+plot_nrb_dens(zn, show = True, save = False)
 
 plot_errors([list_err_inf, list_err_l2, list_minval, list_maxval, list_mass])
 

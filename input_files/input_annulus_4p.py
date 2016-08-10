@@ -7,8 +7,8 @@ DEBUG_MODE = False
 # *********************************************
 domain = ANNULUS_4p_domain
 # Discretization:
-NPTS1 = 100
-NPTS2 = 100
+NPTS1 = 64
+NPTS2 = 64
 
 # *********************************************
 # Definition of simulation

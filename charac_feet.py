@@ -1,6 +1,8 @@
 from globals_variables import *
+from geometry import geo
 from geometry import npatchs
 from geometry import jac
+from geometry import X_mat, Y_mat
 import connectivity as conn
 
 
@@ -13,13 +15,11 @@ import connectivity as conn
 
 
 
-def get_phy_char(X_mat, Y_mat, npatchs, advec, which_advec, tstep, dt):
+def get_phy_char(npatchs, advec, which_advec, tstep, dt):
     """
     Computes characteristics' origin in the physical domain.
 
     Args:
-        X_mat: 1st coordinates of mesh points in physical domain
-        Y_mat: 2nd coordinates of mesh points in physical domain
         npatchs: number of patches
         advec: advection coefficients on each coordinate of each patch
         which_advec: type of advection (int)
@@ -60,7 +60,7 @@ def get_phy_char(X_mat, Y_mat, npatchs, advec, which_advec, tstep, dt):
     return xnp1, ynp1
 
 
-def get_pat_char(geo, eta1, eta2, advec, dt):
+def get_pat_char(eta1, eta2, advec, dt):
     """
     Computes the characteristics in logical domain.
 
@@ -73,7 +73,6 @@ def get_pat_char(geo, eta1, eta2, advec, dt):
         sqrtg = det(J) = det (Jacobian)
         rot(Psi) = J^-1 * A * sqrtg
     Args:
-        geo: Set of all the patches, given by igakit
         eta1: vector containing the coordinates of eta1
         eta2: vector containing the coordinates of eta2
         advec: advection coefficient for every direction, patch and point

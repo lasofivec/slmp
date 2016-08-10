@@ -4,14 +4,16 @@ from prettyplotlib import brewer2mpl
 import numpy as np
 import os, sys
 from globals_variables import *
-from geometry import geo
+from geometry import geo, X_mat, Y_mat, func_init
 
 # Plotting variables:
 levels = np.linspace(PLOT_VAL_MIN, PLOT_VAL_MAX, 25)
 pl.style.use('thesisstyle')
 
 
-def plot_nrb_dens(X_mat, Y_mat, zn, title = '', show = True, save = False, tstep = nstep) :
+def plot_nrb_dens(zn, show = False, save = True, tstep = nstep) :
+    title  = 'Computed solution of the advection equation at $t =$ ' \
+             + str(tstep)+'\n\nwith '+func_formula
     listz = []
     pl.clf()
     for npat,nrb in enumerate(geo) :
@@ -26,8 +28,8 @@ def plot_nrb_dens(X_mat, Y_mat, zn, title = '', show = True, save = False, tstep
     pl.title(title)
     pl.colorbar(orientation='horizontal')
     pl.grid()
-    pl.xlabel('x')
-    pl.ylabel('y')
+    pl.xlabel('$x$')
+    pl.ylabel('$y$')
     pl.axis('image')
     if (show) :
         pl.show(block=True)
@@ -43,8 +45,9 @@ def plot_nrb_dens(X_mat, Y_mat, zn, title = '', show = True, save = False, tstep
     return listz
 
 
-def comp_err_time(geo, X, Y, dx, dy, func_init, list_zi, list_errs, \
-                  show = False, plot = False, save = False, ax = True, block = False, tval = nstep) :
+def comp_err_time(dx, dy, list_zi, list_errs, \
+                  show = False, plot = True, save = True, \
+                  block = False, tval = nstep) :
 
     nzeros = ""
     for i in range(len(str(nstep))-len(str(tval))) :
@@ -91,15 +94,15 @@ def comp_err_time(geo, X, Y, dx, dy, func_init, list_zi, list_errs, \
             print " * Erreur (L_2)   patch ", npat, " = ", err_l2
 
         if (plot) :
-            pl.contourf(X[npat], Y[npat], z, levels = levels, cmap=pl.cm.get_cmap(comap))
+            pl.contourf(X_mat[npat], Y_mat[npat], z, levels = levels, cmap=pl.cm.get_cmap(comap))
 
     if (plot) :
         pl.colorbar(orientation='horizontal')
         pl.grid()
         time = tval*dt
         pl.title('Analytical solution of the advection equation at $t =$ ' + str(time)+'\n\nwith '+func_formula)
-        pl.xlabel('x')
-        pl.ylabel('y')
+        pl.xlabel('$x$')
+        pl.ylabel('$y$')
         pl.axis('image')
         if (save) :
             pl.savefig("results/results_figures/exact_values/exact_density_t"+tstep+".eps", \
@@ -201,6 +204,7 @@ def plot_errors(list_errs):
     # #if comparing derivative approximation
     # path = "results/errors"
     # #if comparing interpolation method
+
     if (which_interp == 0) :
         str_num = "_sllb_interp"
     else :

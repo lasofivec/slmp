@@ -5,13 +5,13 @@ from input_options import *
 # *********************************************
 domain = SQUARE_4p_domain
 # Discretization:
-NPTS1 = 100
-NPTS2 = 100
+NPTS1 = 40
+NPTS2 = 40
 
 # *********************************************
 # Definition of simulation
 # *********************************************
-tmax = 9.
+tmax = 5.
 dt   = 0.05
 viewstep = 10
 
@@ -19,8 +19,8 @@ viewstep = 10
 # Definition of initial distribution
 # *********************************************
 which_f = "GAUSSIAN_DISTRIBUTION" 
-dist_center_x = -0.5
-dist_center_y = -0.5
+dist_center_x = -0.15
+dist_center_y = -0.15
 
 # *********************************************
 # Definition of advection coefficient
