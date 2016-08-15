@@ -1,42 +1,95 @@
-def contain_particles(eta1_mat, eta2_mat, advec_coeffs, eta1_orig, eta2_orig, where_char, last_advec_percent):
-    """
-    Resets values of characteristics origin such that their coordinates remain on the patch.
-    Furthermore it saves the value of the advection done in eta1 and eta2.
-    RECURSIVE FUNCTION.
+def contain_particles_1D(where_out, \
+                         is_above1, is_eta1,\
+                         eta_out, eta_in, \
+                         advec_out, advec_in,\
+                         eta_out_orig, eta_in_orig, \
+                         face):
 
-    Notes:
-        rhs_eta1, rhs_eta2, and dt, are only need to compute the advection done (when not the characteristics origin
-        leaves the patch). The value of the advection done in each direction is computed and stored
-        in advec_done_1 and advec_done_2.
-    Args:
-        eta1_mat: 1st coordinates on patch (of all points)
-        eta2_mat: 2nd coordinates on patch (of all points)
-        rhs_eta1: 1st coordinate of RHS of the ODE to be solved for characteristics origin
-        rhs_eta2: 2nd coordinate of RHS of the ODE to be solved for characteristics origin
-        advec_done_1: [INOUT] value of the advection done in eta1
-        advec_done_2: [INOUT] value of the advection done in eta2
-        eta1_orig: [INOUT] 1st coordinate of characteristic's origin truncated so that it stays in patch
-        eta2_orig: [INOUT] 2nd coordinate of characteristic's origin truncated so that it stays in patch
-        where_char: [INOUT] index of patch where the origin of the characteristic is situated.
+    # We compute the actual percent we could advect from
+    current_percent = (eta_out[where_out] - 1.*is_above1)/ advec_out[where_out]
+    # Checking if the particle is not still out of the patch
+    temp = eta_in[where_out] - current_percent * advec_in[where_out]
+    where_out2 = where_out[0][np.where((temp >= 0.) & (temp <=1.))[0]]
+    if np.shape(where_out)[0]!=1:
+        where_out3 = where_out[1][np.where((temp >= 0.) & (temp <=1.))[0]]
+        where_out = (where_out2, where_out3)
+    else:
+        where_out = (where_out2,)
+    # updating the percent:
+    current_percent = (eta_out[where_out] -1.*is_above1) / advec_out[where_out]
+    # ....
+    last_advec_percent[where_out] += current_percent
 
-    Returns:
-    """
+    # We compute where the particle stayed
+    eta_out_orig[where_out] = 1.*is_above1
+    eta_in_orig[where_out] = eta_in[where_out] \
+                           - current_percent * advec_in[where_out]
 
-    # Separating advection:
-    [advec_coef1, advec_coef2] = advec_coeffs
+    # Looking for the neigh. patch and transforming the coord to that patch
+    [list_pats, list_faces] = conn.connectivity(where_char[where_out], face)
 
-    # # Rounding results:
-    eta1_orig[np.where(abs(eta1_orig) < epsilon2)]=0.
-    eta2_orig[np.where(abs(eta2_orig) < epsilon2)]=0.
-    eta1_orig[np.where(abs(1. - eta1_orig) < epsilon2)]=1.
-    eta2_orig[np.where(abs(1. - eta2_orig) < epsilon2)]=1.
+    # We treat external external boundary conditions here,
+    # ie when [npat, face] = [npat', face']
+    where_not_dirichlet = np.where((where_char[where_out] != list_pats)
+                                       & (np.asarray(list_faces) != face))[0]
+    if np.shape(where_out)[0]!=1:
+        where_out = [where_out[0][where_not_dirichlet],
+                     where_out[1][where_not_dirichlet]]
+    else:
+        where_out = where_out[0][where_not_dirichlet]
+        np.reshape(where_out,(1, np.size(where_out)))
 
-    # For particles that stay in the domain
-    in_indices = np.where((eta1_orig >= 0.) & (eta1_orig <= 1.) & (eta2_orig >= 0.) & (eta2_orig <= 1.))
-    # Nothing to for particles that are in domain
-    last_advec_percent[in_indices] = 100
-    if (last_advec_percent == 100).all() :
-        return
+    if np.size(where_out) > 0:
+        where_orig = where_char[where_out]
+        list_pats2 = [list_pats[val0] for index0, val0 \
+                      in enumerate(where_not_dirichlet)]
+        where_char[where_out] = list_pats2
 
+        [eta1_out, eta2_out] = \
+            conn.transform_patch_coordinates(eta_in_orig[where_out], list_faces)
 
-    where_out_e1_min = np.where(eta1_orig < 0.)
+        if (is_eta1) :
+            [advec1, advec2] = \
+                    conn.transform_advection(\
+                    advec_out[where_out], advec_in[where_out],
+                    where_orig, where_char[where_out],
+                    eta_out_orig[where_out], eta_in_orig[where_out], \
+                    eta1_out, eta2_out)
+            # We get the origin point
+            eta_out_orig[where_out] = eta1_out
+            eta_in_orig[where_out] = eta2_out
+        else :
+            [advec1, advec2] = \
+                    conn.transform_advection(\
+                    advec_in[where_out], advec_out[where_out],
+                    where_orig, where_char[where_out],
+                    eta_in_orig[where_out], eta_out_orig[where_out], \
+                    eta1_out, eta2_out)
+            # We get the origin point
+            eta_in_orig[where_out] = eta1_out
+            eta_out_orig[where_out] = eta2_out
+
+        # Now we advect with the remaining percentage left
+        eta1_out += -advec1 * (1. - last_advec_percent[where_out])
+        eta2_out += -advec2 * (1. - last_advec_percent[where_out])
+        # and we contain the particles again
+        this_percent = last_advec_percent[where_out]
+        if (this_percent < 0.).any():
+            import sys
+            sys.exit("In contain_particles_1D: negative percentage found")
+
+        if (is_eta1):
+            contain_particles(eta_out_orig[where_out], eta_in_orig[where_out], \
+                          [advec1, advec2], \
+                          eta1_out, eta2_out, \
+                          where_char[where_out], this_percent)
+        else:
+            contain_particles(eta_in_orig[where_out], eta_out_orig[where_out], \
+                          [advec1, advec2], \
+                          eta1_out, eta2_out, \
+                          where_char[where_out], this_percent)
+
+        # We can now replace with new values:
+        eta1_orig[where_out] = eta1_out
+        eta2_orig[where_out] = eta2_out
+        last_advec_percent[where_out] = this_percent
