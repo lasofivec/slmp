@@ -1,12 +1,14 @@
 from input_options import *
 
+DEBUG_MODE = False
+
 # *********************************************
 # Definition of the geometry
 # *********************************************
 domain = SQUARE_4p_domain
 # Discretization:
-NPTS1 = 40
-NPTS2 = 40
+NPTS1 = 100
+NPTS2 = 100
 
 # *********************************************
 # Definition of simulation
@@ -26,6 +28,8 @@ dist_center_y = -0.15
 # Definition of advection coefficient
 # *********************************************
 which_advec = ADVEC_CNST
+advec_dir1 = 0.1
+advec_dir2 = 0.1
 
 #**********************************************
 # Definition of interpolation method used
