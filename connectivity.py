@@ -19,7 +19,7 @@ for dict in geo.connectivity:
     list_faces_duplicata.append(dict['clone'])
 # TODO: how to treat exterior boundary conditions?
 
-
+# For periodic BC we do this by hand:
 if domain == SQUARE_2p_domain:
     list_faces_duplicata.append([1,2])
     list_faces_duplicated.append([0,0])
@@ -115,11 +115,18 @@ def get_neighbours(npat):
 
 
 def get_face(mat, face, indx=0):
-    # ******************************************
-    # Gives back a vector with the data
-    # of the matrix "mat" at the face "face"
-    # "indx" is the shiffting value from face
-    # ******************************************
+    """
+    Gives back a vector with the data of the matrix "mat"
+    at the face "face" with "indx" shift from face.
+
+    Args
+    mat: matrix containing the value of the function at a given
+         patch.
+    face: index of the face where we wish to get the data from.
+    indx: Shift value, if we want the values directly on the face,
+          there is no need to give this argument. Else it gives the
+          shift (or displacement) value.
+    """
     if face == 0:
         return np.copy(mat[:, indx])
     elif face == 1:
@@ -131,10 +138,6 @@ def get_face(mat, face, indx=0):
     else:
         import sys
         sys.exit("Error in get_face(): face number should be between 0 and 4")
-
-
-
-
 
 
 def transform_patch_coordinates(eta_tab, face_tab):
@@ -193,7 +196,10 @@ def transform_patch_coordinates(eta_tab, face_tab):
 #             advec_coef2[ind] = -advec_coef2[ind]
 #     return [advec_coef1, advec_coef2]
 
-def transform_advection(advec_coef1, advec_coef2, where_from, where_to, eta1_from, eta2_from, eta1_to, eta2_to):
+def transform_advection(advec_coef1, advec_coef2,
+                        where_from, where_to,
+                        eta1_from, eta2_from,
+                        eta1_to, eta2_to):
     # to transform A_i (advection in patch i: P_i) to A_j (resp. P_j)
     # we need to perform the following computation:
     # J_j * J_i * A_i = A_j
