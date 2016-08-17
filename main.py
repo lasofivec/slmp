@@ -125,11 +125,11 @@ for tstep in range(1,nstep+1) :
     # Printing of results and time-relative error
     #------------------------------------------------
     if ((tstep == 1)or(tstep%viewstep == 0)or(tstep == nstep-1)) :
-        # Plotting the density ***************************
+        # Plotting the density:
         listZ = plot_nrb_dens(zn, tstep = tstep)
-        # Computing error ***********
         # Computing the characteristic feet in PHYSICAL space at tnp1 :
         Xnp1, Ynp1 = get_phy_char(npatchs, advec, which_advec, tstep, dt)
+        # Computing errors:
         list_errs = []
         comp_err_time(Xnp1, Ynp1, listZ, list_errs, tval = tstep)
         list_err_inf.append(list_errs[0])
