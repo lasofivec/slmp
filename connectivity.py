@@ -2,15 +2,6 @@ import numpy as np
 from globals_variables import *
 from geometry import geo
 
-# *************************************
-#
-# This version is made to only work
-# with the domain of a circle and
-# an external crown made out 4 patches
-# with the description as follows :
-#
-# *************************************
-
 # Creation liaisons entre les patchs :
 list_faces_duplicated = []
 list_faces_duplicata = []
@@ -43,8 +34,8 @@ if domain == SQUARE_4p_domain:
 
 def connectivity(npat, face):
     """
-    Returns the associated patch and face number to the couple (npat, face) passed in
-    parameter
+    Returns the associated patch and face number to the couple (npat, face)
+    passed in parameter
 
     Notes:
         Usual faces/edges description:
@@ -66,10 +57,12 @@ def connectivity(npat, face):
         count0 = list_faces_duplicated.count([npat, face])
         if count0 == 1:
             ind = list_faces_duplicated.index([npat, face])
-            return [[list_faces_duplicata[ind][0]], [list_faces_duplicata[ind][1]]]
+            return [[list_faces_duplicata[ind][0]],
+                    [list_faces_duplicata[ind][1]]]
         else:
             ind = list_faces_duplicata.index([npat, face])
-            return [[list_faces_duplicated[ind][0]], [list_faces_duplicated[ind][1]]]
+            return [[list_faces_duplicated[ind][0]],
+                    [list_faces_duplicated[ind][1]]]
     else:
         list_pats = []
         list_faces = []
@@ -82,9 +75,9 @@ def connectivity(npat, face):
 
 def get_neighbours(npat):
     """
-    Return a list of the 4 patches neighbouring at each face. If the face is a piece
-    of the domain's boundary (ie. there is not another patch on that face) then
-    it gives the number of the patch.
+    Return a list of the 4 patches neighbouring at each face. If the face is a
+    piece of the domain's boundary (ie. there is not another patch on that face)
+    then it gives the number of the patch.
     Examples:
         The following geometry
          ____2_________2_____
@@ -92,8 +85,10 @@ def get_neighbours(npat):
         1    0   3|1   1     3
         |____0____|____0_____|
 
-        will give: get_neighbours(0) = (0, 0, 0, 1) (the only actual neighbour is at face 3, and it's patch#1)
-                   get_neighbours(1) = (1, 0, 1, 1) (the only actual neighbour is at face 1, and it's patch#0)
+        will give: get_neighbours(0) = (0, 0, 0, 1) (the only actual neighbour
+                       is at face 3, and it's patch#1)
+                   get_neighbours(1) = (1, 0, 1, 1) (the only actual neighbour
+                       is at face 1, and it's patch#0)
 
     Args:
         npat: Number of patch from which we need the neighbours
@@ -144,7 +139,8 @@ def transform_patch_coordinates(eta_tab, face_tab):
     """
     Transforms a point at distance eta in the boundary of index face
     to the coordinates in the standard patch.
-    For example (0) in face 3 will give (1,0), whereas in face 0 it will be (0,0).
+    For example (0) in face 3 will give (1,0), whereas in face 0 it
+    will be (0,0).
     IMPORTANT: It needs that all patches have the same orientation !
     Args:
         eta_tab: coordinate of point in the edge "face"
@@ -233,19 +229,19 @@ def transform_advection(advec_coef1, advec_coef2,
         d2G2 = D[2, :, :, 1][0]
         sqrt_g = d1G1*d2G2 - d1G2*d2G1
         sqrt_g[np.where(sqrt_g == 0.)] = epsilon
-        
+
         new_advec1 = (d2G2 * a1 - d2G1 * a2) / sqrt_g
         new_advec2 = (d1G1 * a2 - d1G2 * a1) / sqrt_g
 
         return [new_advec1, new_advec2]
-    
+
     new_advec1 = np.zeros_like(advec_coef1)
     new_advec2 = np.zeros_like(advec_coef2)
 
     for ind in range(size_prbm):
         a1_temp = advec_coef1[ind]
         a2_temp = advec_coef2[ind]
-        
+
         u = eta1_from[ind]
         v = eta2_from[ind]
         npat = where_from[ind]
@@ -254,7 +250,7 @@ def transform_advection(advec_coef1, advec_coef2,
         d2F1 = D[2, :, :, 0]
         d1F2 = D[1, :, :, 1]
         d2F2 = D[2, :, :, 1]
-        
+
         a1 = d1F1 * a1_temp + d2F1 * a2_temp
         a2 = d1F2 * a1_temp + d2F2 * a2_temp
 
@@ -268,8 +264,8 @@ def transform_advection(advec_coef1, advec_coef2,
         d2G2 = D[2, :, :, 1]
         sqrt_g = d1G1*d2G2 - d1G2*d2G1
         sqrt_g[np.where(sqrt_g == 0.)] = epsilon
-        
+
         new_advec1[ind] = (d2G2 * a1 - d2G1 * a2) / sqrt_g
         new_advec2[ind] = (d1G1 * a2 - d1G2 * a1) / sqrt_g
-                
+
     return [new_advec1, new_advec2]

@@ -7,14 +7,14 @@ from geometry import geo
 
 def compute_slopes(tab, list_patchs, jac):
     """
-    Function that computes the slopes (gradients) of the function at 
+    Function that computes the slopes (gradients) of the function at
     the boundaries of the patch.
 
     tab: contains the data from which we need to compute the slopes
     list_patchs: list of the patchs' IDs.
     jac: jacobian matrix on each patch.
     """
-    
+
     # initialization
     eta1_slopes = np.zeros((np.size(list_patchs), 2, NPTS2))
     eta2_slopes = np.zeros((np.size(list_patchs), 2, NPTS1))
@@ -56,9 +56,9 @@ def compute_derivatives_bound(data, list_patchs):
     derivatives = []
 
     for npat in list_patchs:
-        
+
         derivatives_pat = []
-        
+
         # getting patch's connectivity on each face:
         [[v0], [f0]] = connectivity(npat, 0)
         [[v1], [f1]] = connectivity(npat, 1)
@@ -66,7 +66,7 @@ def compute_derivatives_bound(data, list_patchs):
         [[v3], [f3]] = connectivity(npat, 3)
 
         for face in range(4):
-            
+
             if (face == 0) or (face == 2):
                 deriv_func = np.zeros(NPTS2)
             if (face == 1) or (face == 3):
@@ -87,21 +87,25 @@ def compute_derivatives_bound(data, list_patchs):
                                                    data[v1], f1, NPTS2)
             elif face == 2:
                 if (v2 == npat) and (f2 == face) :
-                    deriv_func = - finite_diff_internal_fwd(data[npat], face, NPTS2)
+                    # deriv_func = np.zeros(NPTS2)
+                    deriv_func = - finite_diff_internal_fwd(data[npat], \
+                                                            face, NPTS2)
                 else :
-                    deriv_func = - cubic_spline_approximation(data[npat], face, \
-                                                   data[v2], f2, NPTS2)
+                    deriv_func = - cubic_spline_approximation(data[npat], \
+                                                    face, data[v2], f2, NPTS2)
             elif face == 3:
                 if (v3 == npat) and (f3 == face) :
-                    deriv_func = -finite_diff_internal_fwd(data[npat], face, NPTS2)
+                    # deriv_func = np.zeros(NPTS1)
+                    deriv_func = - finite_diff_internal_fwd(data[npat], face, \
+                                                           NPTS2)
                 else :
-                    deriv_fun = -cubic_spline_approximation(data[npat], face, \
+                    deriv_fun = - cubic_spline_approximation(data[npat], face, \
                                                    data[v3], f3, NPTS2)
             else:
                 import sys, os
                 sys.exit("Error in compute_derivatives_bound():" + \
                          " unrecognizable face ID.")
-                
+
             derivatives_pat.append(deriv_func)
         derivatives.append(derivatives_pat)
     return derivatives
@@ -113,12 +117,13 @@ def finite_diff_internal_fwd(data, face, NPTS) :
     fip2 = get_face(data, face, indx=2)
     fip3 = get_face(data, face, indx=3)
     fip4 = get_face(data, face, indx=4)
-    d2f  = (-25./12.*fip0 + 4.*fip1 - 3.*fip2 + 4./3.*fip3 - 0.25*fip4) * (NPTS - 1)
+    d2f  = (-25./12.*fip0 + 4.*fip1 - 3.*fip2 + 4./3.*fip3 - 0.25*fip4) \
+           * (NPTS - 1)
     return d2f
 
 
 def cubic_spline_approximation(data1, face1, data2, face2, NPTS) :
-    """ 
+    """
     Computation of slopes using the cubic spline approximation.
     This function is inspired by the article:
     "Hermite Spline Interpolation on Patches for a Parallel
@@ -140,11 +145,11 @@ def cubic_spline_approximation(data1, face1, data2, face2, NPTS) :
         fjp = get_face(data1, face1, indx=j+1)
         fjm = get_face(data2, face2, indx=j+1)
         res = res + wp[j] * fjp + wm[j] * fjm
-    
+
     return res
 
 def compute_weights(h):
-    """ 
+    """
     Computation of weights to compute slopes for interpolation.
     This function is inspired by the article:
     "Hermite Spline Interpolation on Patches for a Parallel
@@ -156,7 +161,7 @@ def compute_weights(h):
     # Initialization
     w_plus  = np.zeros(10)
     w_minus = np.zeros(10)
-    
+
     # First we define some parameters:
     alpha = 1. - 2/14**2
     beta = alpha - 2/14**2/alpha
