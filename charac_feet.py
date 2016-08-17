@@ -263,130 +263,6 @@ def contain_particles(eta1_mat, eta2_mat,
         import os, sys
         sys.exit("STOP")
 
-
-def derivs_eta(geo, npat, eta1_mat, eta2_mat, advec):
-
-    # Getting the jacobian
-    [d1F1, d2F1, d1F2, d2F2] = jacobian(geo, npat, eta1_mat, eta2_mat)
-
-    # Computing the jacobian determinant
-    sqrt_g = d1F1 * d2F2 - d1F2 * d2F1
-    # print "++++++ jacobien = ", sqrt_g
-
-    # Approximating the 0 values of sqrtg to avoid Nans
-    # if (np.size(np.where(sqrt_g == 0.)) > 0) :
-    #     print "heeeere", np.where(sqrt_g == 0.)
-    #     sqrt_g[0,0] = 0.5*(sqrt_g[1,0] + sqrt_g[0,1])
-    #     sqrt_g[NPTS1-1,0] = 0.5*(sqrt_g[NPTS1-2,0] + sqrt_g[NPTS1-1,1])
-    #     sqrt_g[0,NPTS2-1] = 0.5*(sqrt_g[1,NPTS2-1] + sqrt_g[0,NPTS2-2])
-    #     sqrt_g[0,NPTS1-1] = 0.5*(sqrt_g[NPTS1-2,NPTS2-1] + sqrt_g[NPTS1-1,NPTS2-2])
-    # print np.where(sqrt_g == 0.)
-
-    if (np.size(np.where(sqrt_g == 0.)) > 0):
-        print "Warning : singular point"
-        print np.size(np.where(sqrt_g == 0. ))
-        # import os, sys
-        # sys.exit("STOP")
-        sqrt_g[np.where(sqrt_g == 0.)] = epsilon
-
-    # Calculating the value of the second part of the MoC
-    rhs1 = (advec[0] * d2F2 - advec[1] * d2F1) / sqrt_g
-    rhs2 = (advec[1] * d1F1 - advec[0] * d1F2) / sqrt_g
-
-    return rhs1, rhs2
-
-
-def jacobian(geo, npat, eta1_mat, eta2_mat):
-    """
-    Computes jacobian in points given.
-
-    Args:
-        nrb: Contains info about transformations and patches, given by igakit
-        eta1_mat: matrix containing eta1 coordinates
-        eta2_mat: matrix containing eta2 coordinates
-
-    Returns:
-        [d1F1, d2F1, d1F2, d2F2]: list containing the values 
-        of the jacobian matrix at given points.
-    """
-    u = eta1_mat[:, 0]
-    v = eta2_mat[0, :]
-
-    if ((np.size(np.where(u < 0.)) > 0) or (np.size(np.where(u > 1.)) > 0)):
-        print "Warning: in jacobian() from charac_feet.py:"
-        print "         Found a value outside [0,1] in vector u"
-        u[np.where(u < 0.)] = 0.
-        u[np.where(u > 1.)] = 1.
-    if ((np.size(np.where(v < 0.)) > 0) or (np.size(np.where(v > 1.)) > 0)):
-        print "Warning: in jacobian() from charac_feet.py:"
-        print "         Found a value outside [0,1] in vector u"
-        v[np.where(v < 0.)] = 0.
-        v[np.where(v > 1.)] = 1.
-
-    d1F1 = np.zeros((NPTS1, NPTS2))
-    d2F1 = np.zeros((NPTS1, NPTS2))
-    d1F2 = np.zeros((NPTS1, NPTS2))
-    d2F2 = np.zeros((NPTS1, NPTS2))
-
-    # Getting the derivatives
-    d1F1 = jac[npat,0,:,:]
-    d2F1 = jac[npat,1,:,:]
-    d1F2 = jac[npat,2,:,:]
-    d2F2 = jac[npat,3,:,:]
-
-    # Getting rid of close to 0 values
-    d1F1[np.where(abs(d1F1) <= 10 ** -14)] = 0.0
-    d2F1[np.where(abs(d2F1) <= 10 ** -14)] = 0.0
-    d1F2[np.where(abs(d1F2) <= 10 ** -14)] = 0.0
-    d2F2[np.where(abs(d2F2) <= 10 ** -14)] = 0.0
-
-    return [d1F1, d2F1, d1F2, d2F2]
-
-def get_phy_char(npatchs, advec, which_advec, tstep, dt):
-    """
-    Computes characteristics' origin in the physical domain.
-
-    Args:
-        npatchs: number of patches
-        advec: advection coefficients on each coordinate of each patch
-        which_advec: type of advection (int)
-        tstep: number of iteration being done in time
-        dt: step in time
-
-    Returns:
-        xnp1: 1st coordinates of characteristics origin at time tstep
-        ynp1: 2nd coordinates of characteristics origin at time tstep
-    """
-    xnp1 = np.zeros((npatchs, NPTS1, NPTS2))
-    ynp1 = np.zeros((npatchs, NPTS1, NPTS2))
-
-    for npat in range(npatchs):
-        if which_advec == 0:
-            xnp1[npat] = X_mat[npat] - advec[0][npat] * tstep * dt
-            ynp1[npat] = Y_mat[npat] - advec[1][npat] * tstep * dt
-
-        elif which_advec == 1:
-            r = np.sqrt(X_mat[npat] ** 2 + Y_mat[npat] ** 2)
-            th = np.arctan2(Y_mat[npat], X_mat[npat])
-            # TODO : maybe it's better to use directly X_mat and Y_mat
-            xnp1[npat] = r * np.cos(-2. * np.pi * tstep * dt + th)
-            ynp1[npat] = r * np.sin(-2. * np.pi * tstep * dt + th)
-
-        elif which_advec == 2:
-            r = np.sqrt(advec[0][npat] ** 2 + advec[1][npat] ** 2)
-            th = np.arctan2(advec[0][npat], -advec[1][npat])
-            # TODO : maybe it's better to use directly X_mat and Y_mat
-            xnp1[npat] = r * np.sin((tstep) * dt + np.pi / 2. - th) + centera
-            ynp1[npat] = r * np.cos((tstep) * dt + np.pi / 2. - th) + centerb
-
-        else:
-            print "ERROR: in get_phy_char() not known advection."
-            import os, sys
-            sys.exit("STOP")
-
-    return xnp1, ynp1
-
-
 def contain_particles_1D(where_char, where_out, last_advec_percent,\
                          is_above1, is_eta1,\
                          eta_out, eta_in, \
@@ -495,3 +371,126 @@ def contain_particles_1D(where_char, where_out, last_advec_percent,\
             eta_out_orig[where_out] = eta2_out_xmin
             where_char[where_out] = wc
             last_advec_percent[where_out] = this_percent
+
+
+def derivs_eta(geo, npat, eta1_mat, eta2_mat, advec):
+
+    # Getting the jacobian
+    [d1F1, d2F1, d1F2, d2F2] = jacobian(geo, npat, eta1_mat, eta2_mat)
+
+    # Computing the jacobian determinant
+    sqrt_g = d1F1 * d2F2 - d1F2 * d2F1
+    # print "++++++ jacobien = ", sqrt_g
+
+    # Approximating the 0 values of sqrtg to avoid Nans
+    # if (np.size(np.where(sqrt_g == 0.)) > 0) :
+    #     print "heeeere", np.where(sqrt_g == 0.)
+    #     sqrt_g[0,0] = 0.5*(sqrt_g[1,0] + sqrt_g[0,1])
+    #     sqrt_g[NPTS1-1,0] = 0.5*(sqrt_g[NPTS1-2,0] + sqrt_g[NPTS1-1,1])
+    #     sqrt_g[0,NPTS2-1] = 0.5*(sqrt_g[1,NPTS2-1] + sqrt_g[0,NPTS2-2])
+    #     sqrt_g[0,NPTS1-1] = 0.5*(sqrt_g[NPTS1-2,NPTS2-1] + sqrt_g[NPTS1-1,NPTS2-2])
+    # print np.where(sqrt_g == 0.)
+
+    if (np.size(np.where(sqrt_g == 0.)) > 0):
+        print "Warning : singular point"
+        print np.size(np.where(sqrt_g == 0. ))
+        # import os, sys
+        # sys.exit("STOP")
+        sqrt_g[np.where(sqrt_g == 0.)] = epsilon
+
+    # Calculating the value of the second part of the MoC
+    rhs1 = (advec[0] * d2F2 - advec[1] * d2F1) / sqrt_g
+    rhs2 = (advec[1] * d1F1 - advec[0] * d1F2) / sqrt_g
+
+    return rhs1, rhs2
+
+
+def jacobian(geo, npat, eta1_mat, eta2_mat):
+    """
+    Computes jacobian in points given.
+
+    Args:
+        nrb: Contains info about transformations and patches, given by igakit
+        eta1_mat: matrix containing eta1 coordinates
+        eta2_mat: matrix containing eta2 coordinates
+
+    Returns:
+        [d1F1, d2F1, d1F2, d2F2]: list containing the values
+        of the jacobian matrix at given points.
+    """
+    u = eta1_mat[:, 0]
+    v = eta2_mat[0, :]
+
+    if ((np.size(np.where(u < 0.)) > 0) or (np.size(np.where(u > 1.)) > 0)):
+        print "Warning: in jacobian() from charac_feet.py:"
+        print "         Found a value outside [0,1] in vector u"
+        u[np.where(u < 0.)] = 0.
+        u[np.where(u > 1.)] = 1.
+    if ((np.size(np.where(v < 0.)) > 0) or (np.size(np.where(v > 1.)) > 0)):
+        print "Warning: in jacobian() from charac_feet.py:"
+        print "         Found a value outside [0,1] in vector u"
+        v[np.where(v < 0.)] = 0.
+        v[np.where(v > 1.)] = 1.
+
+    d1F1 = np.zeros((NPTS1, NPTS2))
+    d2F1 = np.zeros((NPTS1, NPTS2))
+    d1F2 = np.zeros((NPTS1, NPTS2))
+    d2F2 = np.zeros((NPTS1, NPTS2))
+
+    # Getting the derivatives
+    d1F1 = jac[npat,0,:,:]
+    d2F1 = jac[npat,1,:,:]
+    d1F2 = jac[npat,2,:,:]
+    d2F2 = jac[npat,3,:,:]
+
+    # Getting rid of close to 0 values
+    d1F1[np.where(abs(d1F1) <= 10 ** -14)] = 0.0
+    d2F1[np.where(abs(d2F1) <= 10 ** -14)] = 0.0
+    d1F2[np.where(abs(d1F2) <= 10 ** -14)] = 0.0
+    d2F2[np.where(abs(d2F2) <= 10 ** -14)] = 0.0
+
+    return [d1F1, d2F1, d1F2, d2F2]
+
+def get_phy_char(npatchs, advec, which_advec, tstep, dt):
+    """
+    Computes characteristics' origin in the physical domain.
+
+    Args:
+        npatchs: number of patches
+        advec: advection coefficients on each coordinate of each patch
+        which_advec: type of advection (int)
+        tstep: number of iteration being done in time
+        dt: step in time
+
+    Returns:
+        xnp1: 1st coordinates of characteristics origin at time tstep
+        ynp1: 2nd coordinates of characteristics origin at time tstep
+    """
+    xnp1 = np.zeros((npatchs, NPTS1, NPTS2))
+    ynp1 = np.zeros((npatchs, NPTS1, NPTS2))
+
+    for npat in range(npatchs):
+        if which_advec == 0:
+            xnp1[npat] = X_mat[npat] - advec[0][npat] * tstep * dt
+            ynp1[npat] = Y_mat[npat] - advec[1][npat] * tstep * dt
+
+        elif which_advec == 1:
+            r = np.sqrt(X_mat[npat] ** 2 + Y_mat[npat] ** 2)
+            th = np.arctan2(Y_mat[npat], X_mat[npat])
+            # TODO : maybe it's better to use directly X_mat and Y_mat
+            xnp1[npat] = r * np.cos(-2. * np.pi * tstep * dt + th)
+            ynp1[npat] = r * np.sin(-2. * np.pi * tstep * dt + th)
+
+        elif which_advec == 2:
+            r = np.sqrt(advec[0][npat] ** 2 + advec[1][npat] ** 2)
+            th = np.arctan2(advec[0][npat], -advec[1][npat])
+            # TODO : maybe it's better to use directly X_mat and Y_mat
+            xnp1[npat] = r * np.sin((tstep) * dt + np.pi / 2. - th) + centera
+            ynp1[npat] = r * np.cos((tstep) * dt + np.pi / 2. - th) + centerb
+
+        else:
+            print "ERROR: in get_phy_char() not known advection."
+            import os, sys
+            sys.exit("STOP")
+
+    return xnp1, ynp1
