@@ -30,13 +30,13 @@ def compute_slopes(tab, list_patchs, jac):
             deriv_face = deriv_npat[face]
 
             if face == 0:
-                eta2_slopes[npat, 0] = deriv_face[1]
+                eta2_slopes[npat, 0] = deriv_face
             elif face == 1 :
-                eta1_slopes[npat, 0] = deriv_face[0]
+                eta1_slopes[npat, 0] = deriv_face
             elif face == 2 :
-                eta2_slopes[npat, 1] = deriv_face[1]
+                eta2_slopes[npat, 1] = deriv_face
             elif face == 3 :
-                eta1_slopes[npat, 1] = deriv_face[0]
+                eta1_slopes[npat, 1] = deriv_face
             else :
                 import sys, os
                 sys.exit("Error in compute_slopes():" + \
