@@ -8,6 +8,7 @@
 DEBUG_MODE = False
 
 # Domain:
+SQUARE_1p_domain        = 7 # A rectangular domain (1 patch)
 SQUARE_2p_domain        = 0 # 2 squares domain (2 patches, C1)   [*DEFAULT*]
 CIRCLE_1p_domain        = 1 # circle domain (1 patch)
 DISK_5p_domain          = 2 # crown (4 patches) + internal disk  ( = 5 patches)
