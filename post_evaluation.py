@@ -24,7 +24,8 @@ def plot_nrb_dens(zn, show = False, save = True, tstep = nstep) :
         # pl.show(block = True)
         # pl.clf()
 
-        pl.contourf(X_mat[npat], Y_mat[npat], Z, levels=levels, cmap=pl.cm.get_cmap(comap))
+        pl.contourf(X_mat[npat], Y_mat[npat], Z, levels=levels,
+                    cmap=pl.cm.get_cmap(comap))
     pl.title(title)
     pl.colorbar(orientation='horizontal')
     pl.grid()
@@ -40,7 +41,10 @@ def plot_nrb_dens(zn, show = False, save = True, tstep = nstep) :
         nzeros = ""
         for i in range(len(str(nstep))-len(str(tstep))) :
             nzeros = nzeros + "0"
-        pl.savefig("results/results_figures/Density_T_eq_" + nzeros + str(tstep) + ".eps", format='eps', dpi=1000, facecolor='w', edgecolor='none')
+        print "... saving numerical density for t = ", tstep
+        pl.savefig("results/results_figures/Density_T_eq_" + nzeros
+                   + str(tstep) + ".eps", format='eps', dpi=1000,
+                   facecolor='w', edgecolor='none')
     pl.close()
     return listz
 
@@ -94,19 +98,22 @@ def comp_err_time(dx, dy, list_zi, list_errs, \
             print " * Erreur (L_2)   patch ", npat, " = ", err_l2
 
         if (plot) :
-            pl.contourf(X_mat[npat], Y_mat[npat], z, levels = levels, cmap=pl.cm.get_cmap(comap))
+            pl.contourf(X_mat[npat], Y_mat[npat], z, levels = levels,
+                        cmap=pl.cm.get_cmap(comap))
 
     if (plot) :
         pl.colorbar(orientation='horizontal')
         pl.grid()
-        time = tval*dt
-        pl.title('Analytical solution of the advection equation at $t =$ ' + str(time)+'\n\nwith '+func_formula)
+        pl.title('Analytical solution of the advection equation at $t =$ '
+                 + str(tval) +'\n\nwith '+func_formula)
         pl.xlabel('$x$')
         pl.ylabel('$y$')
         pl.axis('image')
         if (save) :
-            pl.savefig("results/results_figures/exact_values/exact_density_t"+tstep+".eps", \
-                       format='eps', dpi=1000, facecolor='w', edgecolor='none')
+            print "... saving analytical value for t = ", tstep
+            pl.savefig("results/results_figures/exact_values/exact_density_t"
+                       +tstep+".eps", format='eps', dpi=1000,
+                       facecolor='w', edgecolor='none')
         if (block) :
             pl.show(block=True)
 
@@ -185,7 +192,8 @@ def plot_errors(list_errs):
     pl.close()
 
     fig, ax = pl.subplots(1)
-    pl.title("Time evolution of $\sum_{i,j}f(t,x_i,y_j) - \sum_{i,j}f(0,x_i,y_j)$")
+    pl.title("Time evolution of the mass"
+             + "$\sum_{i,j}f(t,x_i,y_j) - \sum_{i,j}f(0,x_i,y_j)$")
     pl.xlabel("Time")
     #    ppl.legend(ax, loc='upper left')
     pl.plot(list_tmp, list_emt_mass, '-')
@@ -199,7 +207,7 @@ def plot_errors(list_errs):
     # *** Save error curve :
 
     # #if comparing number of points :
-    # str_num = str(NPTS1)+'_'+str(NPTS2) 
+    # str_num = str(NPTS1)+'_'+str(NPTS2)
     # path = "results/errors/space_disc"
     # #if comparing derivative approximation
     # path = "results/errors"
