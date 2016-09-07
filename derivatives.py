@@ -5,6 +5,36 @@ from connectivity import get_face, connectivity
 from geometry import geo
 
 
+def compute_weights(h):
+    """
+    Computation of weights to compute slopes for interpolation.
+    This function is inspired by the article:
+    "Hermite Spline Interpolation on Patches for a Parallel
+     Solving of the Vlasov-Poisson Equation"
+    by Nicolas Crouseilles, Guillaume Latu, Eric Sonnendrucker
+
+    h : step of discretization"""
+
+    # Initialization
+    w_plus  = np.zeros(10)
+    w_minus = np.zeros(10)
+
+    w_plus[0] = 8.03847585E-1
+    w_plus[1] = -2.15390339E-1
+    w_plus[2] = 5.77137695E-2
+    w_plus[3] = -1.54647393E-2
+    w_plus[4] = 4.14518786E-3
+    w_plus[5] = -1.11379781E-3
+    w_plus[6] = 3.01146127E-4
+    w_plus[7] = -7.97151512E-5
+    w_plus[8] = 1.77144780E-5
+    w_plus[9] = -2.21430976E-6
+
+    w_minus = -w_plus
+
+    return [w_plus/h, w_minus/h]
+
+
 def compute_slopes(tab, list_patchs, jac):
     """
     Function that computes the slopes (gradients) of the function at
@@ -137,7 +167,7 @@ def cubic_spline_approximation(data1, face1, data2, face2, NPTS) :
     NPTS  : number of points on the face1 and face2.
     """
 
-    h = 1/NPTS
+    h = 1./NPTS
     [wp, wm] = compute_weights(h)
 
     res = 0.
@@ -147,36 +177,3 @@ def cubic_spline_approximation(data1, face1, data2, face2, NPTS) :
         res = res + wp[j] * fjp + wm[j] * fjm
 
     return res
-
-def compute_weights(h):
-    """
-    Computation of weights to compute slopes for interpolation.
-    This function is inspired by the article:
-    "Hermite Spline Interpolation on Patches for a Parallel
-     Solving of the Vlasov-Poisson Equation"
-    by Nicolas Crouseilles, Guillaume Latu, Eric Sonnendrucker
-
-    h : step of discretization"""
-
-    # Initialization
-    w_plus  = np.zeros(10)
-    w_minus = np.zeros(10)
-
-    # First we define some parameters:
-    alpha = 1. - 2/14**2
-    beta = alpha - 2/14**2/alpha
-
-    w_plus[0]  = 1/beta * (39/49/h - 1/14/alpha * 3/49/h)
-    w_plus[1]  = 1/beta * (-3/14/h -3/14**3/alpha/h)
-    w_plus[2]  = 1/beta * (3/49/h - 39/14**2/49/alpha/h)
-    w_plus[3]  = 1/beta * -3/14**2/h
-    w_plus[4]  = 1/beta * 39 /14**2/49/alpha/h
-    w_plus[5]  = 1/beta * (-3/14**3/alpha/h + 1/14**4/alpha/12/h)
-    w_plus[6]  = 1/beta * ( 3/14**2/49/h - 8/14**4/alpha/12/h)
-    w_plus[7]  = 1/beta * -3/14**4/alpha/h
-    w_plus[8]  = 1/beta * 8/14**4/alpha/12/h
-    w_plus[9]  = 1/beta * -1/14**4/alpha/12/h
-
-    w_minus = -w_plus
-
-    return [w_plus, w_minus]
