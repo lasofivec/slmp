@@ -7,8 +7,8 @@ DEBUG_MODE = False
 # *********************************************
 domain = SQUARE_4p_domain
 # Discretization:
-NPTS1 = 100
-NPTS2 = 100
+NPTS1 = 60
+NPTS2 = 60
 
 # *********************************************
 # Definition of simulation
@@ -22,14 +22,14 @@ viewstep = 10
 # *********************************************
 which_f = "GAUSSIAN_DISTRIBUTION"
 dist_center_x = -0.5
-dist_center_y = -0.5
+dist_center_y = -0.
 
 # *********************************************
 # Definition of advection coefficient
 # *********************************************
 which_advec = ADVEC_CNST
 advec_dir1 = 0.1
-advec_dir2 = 0.1
+advec_dir2 = 0.
 
 #**********************************************
 # Definition of interpolation method used
