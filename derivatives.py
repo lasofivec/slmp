@@ -118,6 +118,10 @@ def compute_derivatives_bound(data, list_patchs):
 
         for face in range(4):
 
+            # Flags to know if there are dirichlet BC
+            up_isdir = False
+            dw_isdir = False
+
             if (face == 0) or (face == 2):
                 deriv_func = np.zeros(NPTS2)
             if (face == 1) or (face == 3):
@@ -125,30 +129,52 @@ def compute_derivatives_bound(data, list_patchs):
 
             # Computation:
             if face == 0:
+
+                if (f3 == 3) and (npat == v3):
+                    up_isdir = True
+                if (f1 == 1) and (npat == v1):
+                    dw_isdir = True
+
                 if (v0 == npat) and (f0 == face) :
                     deriv_func = finite_diff_internal_fwd(data[npat], f0, NPTS2)
                 else :
                     deriv_func = cubic_spline_approximation(data[npat], face, \
                                                    data[v0], f0, NPTS2)
             elif face == 1:
+
+                if (f2 == 2) and (npat == v2):
+                    up_isdir = True
+                if (f0 == 0) and (npat == v0):
+                    dw_isdir = True
+
                 if (v1 == npat) and (f1 == face) :
                     deriv_func = finite_diff_internal_fwd(data[npat], f1, NPTS2)
                 else :
                     deriv_func = cubic_spline_approximation(data[npat], face, \
                                                    data[v1], f1, NPTS2)
             elif face == 2:
+
+                if (f3 == 3) and (npat == v3):
+                    up_isdir = True
+                if (f1 == 1) and (npat == v1):
+                    dw_isdir = True
+
                 if (v2 == npat) and (f2 == face) :
-                    # deriv_func = np.zeros(NPTS2)
                     deriv_func = - finite_diff_internal_fwd(data[npat], \
                                                             face, NPTS2)
                 else :
                     deriv_func = - cubic_spline_approximation(data[npat], \
                                                     face, data[v2], f2, NPTS2)
             elif face == 3:
+
+                if (f2 == 2) and (npat == v2):
+                    up_isdir = True
+                if (f0 == 0) and (npat == v0):
+                    dw_isdir = True
+
                 if (v3 == npat) and (f3 == face) :
-                    # deriv_func = np.zeros(NPTS1)
                     deriv_func = - finite_diff_internal_fwd(data[npat], face, \
-                                                           NPTS2)
+                                                            NPTS2)
                 else :
                     deriv_fun = - cubic_spline_approximation(data[npat], face, \
                                                    data[v3], f3, NPTS2)
