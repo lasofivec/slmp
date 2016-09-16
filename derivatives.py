@@ -34,6 +34,27 @@ def compute_weights(h):
 
     return [w_plus/h, w_minus/h]
 
+def compute_weights2d(h):
+    weights1 = np.zeros((5, 3))
+
+    weights1[1, 0] = - 0.822695035460993 / 2.0
+    weights1[1, 1] = - 0.0141843971631206
+    weights1[1, 2] = 0.00709219858156028
+
+    weights1[2, 0] = 0.230496453900709 / 2.0
+    weights1[2, 1] = 0.0212765957446808
+    weights1[2, 2] = - 0.00443262411347518
+
+    weights1[3, 0] = - 0.0567375886524823 / 2.0
+    weights1[3, 1] = - 0.0141843971631206
+    weights1[3, 2] = 0.
+
+    weights1[4, 0] = 0.00797872340425532 / 2.0
+    weights1[4, 1] = 0.00354609929078014
+    weights1[4, 2] = 0.000443262411347518
+
+    return weights1/h
+
 
 def compute_slopes(tab, list_patchs, jac):
     """
