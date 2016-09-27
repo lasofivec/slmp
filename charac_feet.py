@@ -396,7 +396,7 @@ def derivs_eta(geo, npat, eta1_mat, eta2_mat, advec):
         print np.size(np.where(sqrt_g == 0. ))
         # import os, sys
         # sys.exit("STOP")
-        sqrt_g[np.where(sqrt_g == 0.)] = epsilon
+        sqrt_g[np.where(sqrt_g == 0.)] = epsilon2
 
     # Calculating the value of the second part of the MoC
     rhs1 = (advec[0] * d2F2 - advec[1] * d2F1) / sqrt_g
