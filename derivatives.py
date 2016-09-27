@@ -224,3 +224,43 @@ def cubic_spline_approximation(data1, face1, data2, face2, NPTS) :
         res = res + wp[j] * fjp + wm[j] * fjm
 
     return res
+
+def cubic_spline_approximation2d(data_bl, face_bl,
+                                 data_br, face_br,
+                                 data_ul, face_ul,
+                                 data_ur, face_ur,
+                                 up_isdir, right_isdir,
+                                 NPTS) :
+    """
+    Computation of 2D slopes using the cubic spline approximation.
+    This function is inspired by the article:
+    "Hermite Spline Interpolation on Patches for a Parallel
+     Solving of the Vlasov-Poisson Equation"
+    by Nicolas Crouseilles, Guillaume Latu, Eric Sonnendrucker
+
+    data1 : array containing the data on patch 1 (P1)
+    face1 : index of the face of P1 where P1 meets P2
+    data2 : array containing the data on patch 2 (P2)
+    face2 : index of the face of P2 where P2 meets P1
+    NPTS  : number of points on the face1 and face2.
+    up_isdir :
+    dw_isdir :
+    """
+
+    h = 1./NPTS
+    wp = compute_weights2d(h)
+    # Determining sense:
+
+    res = 0.
+    for l in range(5):
+        for k in range(1,7):
+            # cases for l<0
+            fmkml = get_face(data_bl, face_bl, indx=l)[-k-1]
+            fpkml = get_face(data_br, face_br, indx=l)[k]
+            # cases for l>0
+            fmkpl = get_face(data_ul, face_ul, indx=l)[-k-1]
+            fpkpl = get_face(data_ur, face_ur, indx=l)[k]
+            # updating result
+            res += wp[k,l] * (fmkml - fpkpl) - wp[k,l] * (fmkpl - fpkml)
+
+    return res
