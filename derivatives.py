@@ -121,6 +121,8 @@ def compute_derivatives_bound(data, list_patchs):
             # Flags to know if there are dirichlet BC
             up_isdir = False
             dw_isdir = False
+            lf_isdir = False
+            rg_isdir = False
 
             if (face == 0) or (face == 2):
                 deriv_func = np.zeros(NPTS2)
@@ -229,7 +231,7 @@ def cubic_spline_approximation2d(data_bl, face_bl,
                                  data_br, face_br,
                                  data_ul, face_ul,
                                  data_ur, face_ur,
-                                 up_isdir, right_isdir,
+#                                 up_isdir, right_isdir,
                                  NPTS) :
     """
     Computation of 2D slopes using the cubic spline approximation.
@@ -244,7 +246,7 @@ def cubic_spline_approximation2d(data_bl, face_bl,
     face2 : index of the face of P2 where P2 meets P1
     NPTS  : number of points on the face1 and face2.
     up_isdir :
-    dw_isdir :
+    right_isdir :
     """
 
     h = 1./NPTS
