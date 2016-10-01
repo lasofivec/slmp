@@ -8,7 +8,7 @@ from scipy import interpolate
 from math import pi
 from post_evaluation import *
 import connectivity as conn
-import derivatives as deriv
+import derivatives2 as deriv
 from globals_variables import *
 from charac_feet import *
 import math
@@ -84,6 +84,36 @@ for tstep in range(1,nstep+1) :
 
     # Computing the limit conditions :
     eta1_slopes, eta2_slopes = deriv.compute_slopes(zn, list_patchs, jac)
+
+    znp1 = np.zeros_like(znp1)
+    for caca in range(5):
+        znp1[0][:, caca]   = eta2_slopes[0][0]
+        znp1[0][:,-caca-1] = eta2_slopes[0][1]
+        znp1[1][:, caca]   = eta2_slopes[1][0]
+        znp1[1][:,-caca-1] = eta2_slopes[1][1]
+    print eta2_slopes[0][0]
+    pl.clf()
+    levels = np.linspace(np.min(eta2_slopes), np.max(eta2_slopes), 25)
+    pl.contourf(X_mat[0], Y_mat[0], znp1[0], levels=levels)
+    pl.contourf(X_mat[1]+0.5, Y_mat[1], znp1[1], levels=levels)
+    pl.colorbar(orientation='horizontal')
+    pl.show(block=True)
+    # eta2 slopes
+    znp1 = np.zeros_like(znp1)
+    for caca in range(5):
+        znp1[0][caca,    :] = eta1_slopes[0][0]
+        znp1[0][-caca-1, :] = eta1_slopes[0][1]
+        znp1[1][caca,    :] = eta1_slopes[1][0]
+        znp1[1][-caca-1, :] = eta1_slopes[1][1]
+    print eta1_slopes[0][:]
+    pl.clf()
+    levels = np.linspace(np.min(eta1_slopes), np.max(eta1_slopes), 25)
+    pl.contourf(X_mat[0], Y_mat[0], znp1[0], levels=levels)
+    pl.contourf(X_mat[1]+0.5, Y_mat[1], znp1[1], levels=levels)
+    pl.colorbar(orientation='horizontal')
+    pl.show(block=True)
+
+    STOP
 
     for npat in list_patchs :
         znp1[npat] = 0.

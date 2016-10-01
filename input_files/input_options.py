@@ -12,9 +12,10 @@ SQUARE_1p_domain        = 7 # A rectangular domain (1 patch)
 SQUARE_2p_domain        = 0 # 2 squares domain (2 patches, C1)   [*DEFAULT*]
 CIRCLE_1p_domain        = 1 # circle domain (1 patch)
 DISK_5p_domain          = 2 # crown (4 patches) + internal disk  ( = 5 patches)
-PINCHEDDISK_5p_domain   = 3 # pinched 5 patch disk (5 patches, no singular points)
+PINCHEDDISK_5p_domain   = 3 # pinched 5-pat disk (5 patches, no singular points)
 SQUARE_4p_domain        = 4 # 2 squares domain (2 patches, C1)
-ANNULUS_4p_domain       = 5 # annulus divided in 4 patches (like the disk_5p but without interior patch)
+ANNULUS_4p_domain       = 5 # annulus divided in 4 patches (like the disk_5p \
+                            # but without interior patch)
 SQUARE_2p_C0_domain     = 6 # 2 square not C1 only C0
 
 # Discretization:
@@ -36,7 +37,7 @@ DIST_SINXY = 4 # sinusoidal pavement
 DIST_PETRI = 5 # Petri
 
 # Coordinates of where the initial distribution is centered:
-# (these values should change with the domain, if not sure better left undefined)
+# (these values should change w/ the domain, if not sure better left undefined)
 dist_center_x = 0.5 # For SQUARE_2p_domain
 dist_center_y = 0.5 # For SQUARE_2p_domain
 
@@ -54,4 +55,3 @@ INTER_SLL3 = 0 # selalib cubic spline method
 INTER_SCI1 = 1 # python's scipy linear  spline interpolator
 INTER_SCI3 = 2 # python's scipy cubic   spline interpolator
 INTER_SCI5 = 3 # python's scipy quantic spline interpolator
-

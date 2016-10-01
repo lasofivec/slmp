@@ -157,7 +157,8 @@ def plot_errors(list_errs):
             mass_val += list_mass[tstep][n]
         list_emt_inf.append(max_err_inf)
         list_emt_l2.append(max_err_l2)
-        print "min val =", min_val
+        if which_f == "COS_SIN_DISTRIBUTION":
+            min_val = 1.+min_val
         list_emt_min.append(min_val)
         list_emt_max.append((1.-max_val)/NPTS1/NPTS2)
         list_emt_mass.append(mass_val)

@@ -34,4 +34,4 @@ advec_dir2 = -0.025
 #**********************************************
 # Definition of interpolation method used
 # *********************************************
-which_interp = INTER_SLL3 
+which_interp = INTER_SLL3
