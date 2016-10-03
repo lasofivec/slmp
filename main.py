@@ -58,7 +58,6 @@ plot_nrb_dens(zn, show=True, save=True, tstep = 0)
 char_eta1, char_eta2, where_char = get_pat_char(eta1, eta2, advec, dt)
 
 
-
 # Extracting the particles that stay in their own domain:
 char_eta1_id = np.copy(char_eta1)
 char_eta2_id = np.copy(char_eta2)
@@ -85,35 +84,37 @@ for tstep in range(1,nstep+1) :
     # Computing the limit conditions :
     eta1_slopes, eta2_slopes = deriv.compute_slopes(zn, list_patchs, jac)
 
-    znp1 = np.zeros_like(znp1)
-    for caca in range(5):
-        znp1[0][:, caca]   = eta2_slopes[0][0]
-        znp1[0][:,-caca-1] = eta2_slopes[0][1]
-        znp1[1][:, caca]   = eta2_slopes[1][0]
-        znp1[1][:,-caca-1] = eta2_slopes[1][1]
-    print eta2_slopes[0][0]
-    pl.clf()
-    levels = np.linspace(np.min(eta2_slopes), np.max(eta2_slopes), 25)
-    pl.contourf(X_mat[0], Y_mat[0], znp1[0], levels=levels)
-    pl.contourf(X_mat[1]+0.5, Y_mat[1], znp1[1], levels=levels)
-    pl.colorbar(orientation='horizontal')
-    pl.show(block=True)
-    # eta2 slopes
-    znp1 = np.zeros_like(znp1)
-    for caca in range(5):
-        znp1[0][caca,    :] = eta1_slopes[0][0]
-        znp1[0][-caca-1, :] = eta1_slopes[0][1]
-        znp1[1][caca,    :] = eta1_slopes[1][0]
-        znp1[1][-caca-1, :] = eta1_slopes[1][1]
-    print eta1_slopes[0][:]
-    pl.clf()
-    levels = np.linspace(np.min(eta1_slopes), np.max(eta1_slopes), 25)
-    pl.contourf(X_mat[0], Y_mat[0], znp1[0], levels=levels)
-    pl.contourf(X_mat[1]+0.5, Y_mat[1], znp1[1], levels=levels)
-    pl.colorbar(orientation='horizontal')
-    pl.show(block=True)
+    # znp1 = np.zeros_like(znp1)
+    # for caca in range(10):
+    #     znp1[0][:, caca]   = eta2_slopes[0][0]
+    #     znp1[0][:,-caca-1] = eta2_slopes[0][1]
+    #     znp1[1][:, caca]   = eta2_slopes[1][0]
+    #     znp1[1][:,-caca-1] = eta2_slopes[1][1]
+    # print eta2_slopes[0][0]
+    # pl.clf()
+    # # levels = np.linspace(-0.01, 0.01, 20)
+    # levels = np.linspace(np.min(eta2_slopes), np.max(eta2_slopes), 25)
+    # pl.contourf(X_mat[0], Y_mat[0], znp1[0], levels=levels)
+    # pl.contourf(X_mat[1]+0.5, Y_mat[1], znp1[1], levels=levels)
+    # pl.colorbar(orientation='horizontal')
+    # pl.show(block=True)
+    # # eta2 slopes
+    # znp1 = np.zeros_like(znp1)
+    # for caca in range(10):
+    #     znp1[0][caca,    :] = eta1_slopes[0][0]
+    #     znp1[0][-caca-1, :] = eta1_slopes[0][1]
+    #     znp1[1][caca,    :] = eta1_slopes[1][0]
+    #     znp1[1][-caca-1, :] = eta1_slopes[1][1]
+    # print eta1_slopes[0][:]
+    # pl.clf()
+    # # levels = np.linspace(-0.1, 0.1, 20)
+    # levels = np.linspace(np.min(eta1_slopes), np.max(eta1_slopes), 25)
+    # pl.contourf(X_mat[0], Y_mat[0], znp1[0], levels=levels)
+    # pl.contourf(X_mat[1]+1., Y_mat[1], znp1[1], levels=levels)
+    # pl.colorbar(orientation='horizontal')
+    # pl.show(block=True)
 
-    STOP
+    # STOP
 
     for npat in list_patchs :
         znp1[npat] = 0.

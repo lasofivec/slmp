@@ -74,7 +74,17 @@ print " dt = ", dt
 #--------------------
 # plotting data
 #--------------------
-if which_f == "COS_SIN_DISTRIBUTION" :
+if which_f == "CONSTANT_DISTRIBUTION" :
+    PLOT_VAL_MAX = 1.
+    PLOT_VAL_MIN = -1.
+    comap = "RdBu" #"Spectral"
+    func_formula='$f(x,y) = 0.5$'
+elif which_f == "X_DISTRIBUTION" :
+    PLOT_VAL_MAX = 2.
+    PLOT_VAL_MIN = 0.
+    comap = "RdBu"
+    func_formula='$f(x,y) = x$'
+elif which_f == "COS_SIN_DISTRIBUTION" :
     PLOT_VAL_MAX = 1.
     PLOT_VAL_MIN = -1.
     comap = "RdBu" #"Spectral"
@@ -113,4 +123,3 @@ def write_globals(path, str_num) :
 
 epsilon = 0.01
 epsilon2 = 10**-14
-

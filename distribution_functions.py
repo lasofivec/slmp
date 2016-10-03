@@ -5,9 +5,11 @@ def initialize_distribution(name, center_x=0.5, center_y=0.5):
     """ Initializes distribution function, with type defined in name.
     Args:
       name (str) : type of the distribution function."""
-    
+
     if (name == "CONSTANT_DISTRIBUTION") :
         func_init = lambda x,y : constant_distribution(x,y)
+    elif (name == "X_DISTRIBUTION"):
+        func_init = lambda x,y : x_distribution(x,y)
     elif (name == "GAUSSIAN_DISTRIBUTION") :
         func_init = lambda x,y : gaussian_pulse(x, y, \
                                                 xc=center_x, \
@@ -43,6 +45,19 @@ def constant_distribution(x,y,val=0.5):
         res = val
     return res
 
+def x_distribution(x,y,val=0.5):
+    """  distribution function f(x,y) = x
+    Args:
+      x   (real) : x-coordinate of point where function will be evaluated.
+      y   (real) : y-coordinate of point where function will be evaluated.
+      val (real) : value of distribution. Default =0.5. """
+
+    res = np.zeros_like(x)
+    if (np.size(res) > 1):
+        res[:] = y
+    else:
+        res = y
+    return res
 
 def gaussian_pulse(x, y, xc, yc, sig, max):
     """ Distribution function as a gaussian pulse.

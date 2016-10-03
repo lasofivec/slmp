@@ -159,8 +159,14 @@ def plot_errors(list_errs):
         list_emt_l2.append(max_err_l2)
         if which_f == "COS_SIN_DISTRIBUTION":
             min_val = 1.+min_val
-        list_emt_min.append(min_val)
-        list_emt_max.append((1.-max_val)/NPTS1/NPTS2)
+            max_val = 1.-max_val
+        elif which_f == "CONSTANT_DISTRIBUTION":
+            min_val = 0.5 - min_val
+            max_val = 0.5 - max_val
+        else:
+            max_val = 1.-max_val
+        list_emt_min.append(min_val/NPTS1/NPTS2)
+        list_emt_max.append(max_val/NPTS1/NPTS2)
         list_emt_mass.append(mass_val)
     list_emt_mass = [e - list_emt_mass[0] for e in list_emt_mass]
 

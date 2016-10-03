@@ -8,7 +8,7 @@ DEBUG_MODE = False
 domain = SQUARE_4p_domain
 # Discretization:
 NPTS1 = 60
-NPTS2 = 60
+NPTS2 = NPTS1
 
 # *********************************************
 # Definition of simulation
