@@ -14,7 +14,6 @@ from charac_feet import *
 import math
 
 
-
 #---------------------------
 #    advection definition
 #---------------------------
@@ -35,8 +34,6 @@ if (which_advec == 2) :
     #    for an un centered circular motion advection : ########
     advec = [Y_mat - centerb, -X_mat + centera]
 
-
-
 #------
 zn   = np.zeros((npatchs, NPTS1, NPTS2))
 znp1 = np.zeros((npatchs, NPTS1, NPTS2))
@@ -53,6 +50,11 @@ plot_nrb_dens(zn, show=True, save=True, tstep = 0)
 #                                                            #
 #============================================================#
 
+# for npat in list_patchs:
+#     for face in range(4):
+#         print "connectivity = ", npat, face
+#         print " ........... = ", conn.connectivity(npat, face)
+# STOP
 
 # Computing the characteristics' origin
 char_eta1, char_eta2, where_char = get_pat_char(eta1, eta2, advec, dt)
@@ -83,38 +85,6 @@ for tstep in range(1,nstep+1) :
 
     # Computing the limit conditions :
     eta1_slopes, eta2_slopes = deriv.compute_slopes(zn, list_patchs, jac)
-
-    # znp1 = np.zeros_like(znp1)
-    # for caca in range(10):
-    #     znp1[0][:, caca]   = eta2_slopes[0][0]
-    #     znp1[0][:,-caca-1] = eta2_slopes[0][1]
-    #     znp1[1][:, caca]   = eta2_slopes[1][0]
-    #     znp1[1][:,-caca-1] = eta2_slopes[1][1]
-    # print eta2_slopes[0][0]
-    # pl.clf()
-    # # levels = np.linspace(-0.01, 0.01, 20)
-    # levels = np.linspace(np.min(eta2_slopes), np.max(eta2_slopes), 25)
-    # pl.contourf(X_mat[0], Y_mat[0], znp1[0], levels=levels)
-    # pl.contourf(X_mat[1]+0.5, Y_mat[1], znp1[1], levels=levels)
-    # pl.colorbar(orientation='horizontal')
-    # pl.show(block=True)
-    # # eta2 slopes
-    # znp1 = np.zeros_like(znp1)
-    # for caca in range(10):
-    #     znp1[0][caca,    :] = eta1_slopes[0][0]
-    #     znp1[0][-caca-1, :] = eta1_slopes[0][1]
-    #     znp1[1][caca,    :] = eta1_slopes[1][0]
-    #     znp1[1][-caca-1, :] = eta1_slopes[1][1]
-    # print eta1_slopes[0][:]
-    # pl.clf()
-    # # levels = np.linspace(-0.1, 0.1, 20)
-    # levels = np.linspace(np.min(eta1_slopes), np.max(eta1_slopes), 25)
-    # pl.contourf(X_mat[0], Y_mat[0], znp1[0], levels=levels)
-    # pl.contourf(X_mat[1]+1., Y_mat[1], znp1[1], levels=levels)
-    # pl.colorbar(orientation='horizontal')
-    # pl.show(block=True)
-
-    # STOP
 
     for npat in list_patchs :
         znp1[npat] = 0.
@@ -174,6 +144,34 @@ for tstep in range(1,nstep+1) :
         npat_maxerr = list_errs[0].index(np.max(list_errs[0]))
         print(" --> For npat =", npat_maxerr, " maximum err l_inf =", maxerr)
 
+        # znp1 = np.zeros_like(znp1)
+        # pl.clf()
+        # mm = np.min(eta2_slopes); pp = np.max(eta2_slopes)
+        # levels = np.linspace(mm-0.01, pp+0.01, 25)
+        # for caca in range(10):
+        #     for npat in list_patchs:
+        #         znp1[npat][:, caca]   = eta2_slopes[npat][0]
+        #         znp1[npat][:,-caca-1] = eta2_slopes[npat][1]
+        #         pl.contourf(X_mat[npat], Y_mat[npat], znp1[npat], levels=levels)
+        # pl.colorbar(orientation='horizontal')
+        # pl.axis('image')
+        # pl.title("eta2_slopes")
+        # pl.show(block=True)
+        # # eta2 slopes
+        # znp1 = np.zeros_like(znp1)
+        # pl.clf()
+        # levels = np.linspace(-0.01+np.min(eta1_slopes), np.max(eta1_slopes)+0.01, 25)
+        # for caca in range(10):
+        #     for npat in list_patchs:
+        #         znp1[npat][:, caca]   = eta1_slopes[npat][0]
+        #         znp1[npat][:,-caca-1] = eta1_slopes[npat][1]
+        #         pl.contourf(X_mat[npat], Y_mat[npat], znp1[npat], levels=levels)
+
+        # pl.axis('image')
+        # pl.title("eta1_slopes")
+        # pl.colorbar(orientation='horizontal')
+        # pl.show(block=True)
+
 
 
 # -------------------------------------------
@@ -181,7 +179,7 @@ for tstep in range(1,nstep+1) :
 Xnp1, Ynp1 = get_phy_char(npatchs, advec, which_advec, tstep, dt)
 comp_err_time(Xnp1, Ynp1, \
               listZ, list_errs,
-              show = True, plot = False,
+              show = True, plot = True, block=True,
               tval = tstep)
 plot_nrb_dens(zn, show = True, save = False)
 

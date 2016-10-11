@@ -17,6 +17,7 @@ SQUARE_4p_domain        = 4 # 2 squares domain (2 patches, C1)
 ANNULUS_4p_domain       = 5 # annulus divided in 4 patches (like the disk_5p \
                             # but without interior patch)
 SQUARE_2p_C0_domain     = 6 # 2 square not C1 only C0
+QUART_ANNULUS_1p_domain = 8 # Quart circle, one patch
 
 # Discretization:
 NPTS1 = 24 # Number of points along x

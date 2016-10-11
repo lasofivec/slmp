@@ -46,14 +46,13 @@ def get_pat_char(eta1, eta2, advec, dt):
         rhs = lambda xatn, yatn: derivs_eta(geo, npat,
                                             xatn, yatn,
                                             [advec[0][npat], advec[1][npat]])
-        # we solve the ode using a Runge Kutta method of order 4
+        # We solve the ode using a Runge Kutta method of order 4
         char_eta1[npat], char_eta2[npat], where_char[npat] \
             = rk4(npat, eta1_mat, eta2_mat, dt, rhs)
         print "   * char_eta1 max et min =", \
                 np.max(char_eta1[npat]), np.min(char_eta1[npat])
         print "   * char_eta2 max et min =", \
                 np.max(char_eta2[npat]), np.min(char_eta2[npat])
-
 
     return char_eta1, char_eta2, where_char
 
@@ -91,6 +90,7 @@ def rk4(npat, xn, yn, dt, rhs_func):
                       [advec_x, advec_y],
                       xn_05, yn_05,
                       where_char, last_advec_percent)
+
     k2x, k2y = rhs_func(xn_05, yn_05)
 
     advec_x = 0.5 * dt * k2x
@@ -103,6 +103,7 @@ def rk4(npat, xn, yn, dt, rhs_func):
                       [advec_x, advec_y],
                       xn_15, yn_15,
                       where_char, last_advec_percent)
+
     k3x, k3y = rhs_func(xn_15, yn_15)
 
     advec_x = dt * k3x
@@ -115,6 +116,7 @@ def rk4(npat, xn, yn, dt, rhs_func):
                       [advec_x, advec_y],
                       xn_25, yn_25,
                       where_char, last_advec_percent)
+
     k4x, k4y = rhs_func(xn_25, yn_25)
 
     advec_x = 0.5 * dt / 3. * (k1x + 2.0 * k2x + 2.0 * k3x + k4x)
@@ -131,6 +133,8 @@ def rk4(npat, xn, yn, dt, rhs_func):
                       xnp1, ynp1,
                       where_char, last_advec_percent)
 
+    print " last advec percent = ", last_advec_percent[np.where(last_advec_percent < 1)]
+    print "where = ", np.where(last_advec_percent < 1)
     return xnp1, ynp1, where_char
 
 
@@ -172,37 +176,51 @@ def contain_particles(eta1_mat, eta2_mat,
     [advec_coef1, advec_coef2] = advec_coeffs
 
     # # Rounding results:
-    eta1_orig[np.where(abs(eta1_orig) < epsilon2)]=0.
-    eta2_orig[np.where(abs(eta2_orig) < epsilon2)]=0.
-    eta1_orig[np.where(abs(1. - eta1_orig) < epsilon2)]=1.
-    eta2_orig[np.where(abs(1. - eta2_orig) < epsilon2)]=1.
+    # eta1_orig[np.where(abs(eta1_orig) < epsilon2)]=0.
+    # eta2_orig[np.where(abs(eta2_orig) < epsilon2)]=0.
+    # eta1_orig[np.where(abs(1. - eta1_orig) < epsilon2)]=1.
+    # eta2_orig[np.where(abs(1. - eta2_orig) < epsilon2)]=1.
 
     if DEBUG_MODE:
-        print "---------- eta mat"
-        print eta1_mat
-        print eta2_mat
-        print "---------- advec"
-        print advec_coef1
-        print advec_coef2
-        print "---------- origins"
-        print eta1_orig
-        print eta2_orig
-        print "---------- where"
-        print where_char
-        print "---------- last percent"
-        print last_advec_percent
+        print "___________________________________________"
+        print "     ---------- eta mat"
+        print "       ", eta1_mat
+        print "       ", eta2_mat
+        print "       ", "---------- advec"
+        print "       ", advec_coef1
+        print "       ", advec_coef2
+        print "       ", "---------- origins"
+        print "       ", eta1_orig
+        print "       ", eta2_orig
+        print "       ", "---------- where"
+        print "       ", where_char
+        print "       ", "---------- last percent"
+        print "       ", last_advec_percent
+        print "___________________________________________"
+
+    # Rounding off small values to avoid useless loops :
+    eta1_orig[np.where(abs(eta1_orig) < epsilon2)] = 0.
+    eta2_orig[np.where(abs(eta2_orig) < epsilon2)] = 0.
+    #...................................................
 
     # For particles that stay in the domain
     in_indices = np.where((eta1_orig >= 0.) & (eta1_orig <= 1.)
                           & (eta2_orig >= 0.) & (eta2_orig <= 1.))
 
     # Nothing to for particles that are in domain
-    last_advec_percent[in_indices] = 100
-    if (last_advec_percent == 100).all() :
+    last_advec_percent[in_indices] = 1
+    if (last_advec_percent == 1).all() and DEBUG_MODE :
+        print "results ========="
+        print "origins of chars: "
+        print eta1_orig
+        print eta2_orig
+        print "in the pats:", where_char
+        print "percent :", last_advec_percent
+        print "===== leaving 1 ========"
         return
 
     # For particles that go out on the x axis, below 0 :
-    where_out = np.where(eta1_orig < 0.)
+    where_out = np.where((eta1_orig < 0.) & (abs(eta1_orig) > epsilon2))
     if np.size(where_out) > 0:
         contain_particles_1D(where_char, where_out, last_advec_percent,\
                              False, True, \
@@ -222,7 +240,7 @@ def contain_particles(eta1_mat, eta2_mat,
                              3)
 
     # For particles that go out on the y axis, below 0 :
-    where_out = np.where(eta2_orig < 0.)
+    where_out = np.where((eta2_orig < 0.) & (abs(eta2_orig) > epsilon2))
     if np.size(where_out) > 0:
         contain_particles_1D(where_char, where_out, last_advec_percent,\
                              False, False, \
@@ -241,8 +259,9 @@ def contain_particles(eta1_mat, eta2_mat,
                              eta2_orig, eta1_orig, \
                              2)
 
-    out_indices = np.where((eta1_orig < 0.) & (eta1_orig > 1.)
-                           & (eta2_orig < 0.) & (eta2_orig > 1.))
+
+    eta1_orig[np.where(abs(eta1_orig) < epsilon2)] = 0.
+    eta2_orig[np.where(abs(eta2_orig) < epsilon2)] = 0.
 
     if DEBUG_MODE:
         print "results ========="
@@ -252,6 +271,9 @@ def contain_particles(eta1_mat, eta2_mat,
         print "in the pats:", where_char
         print "percent :", last_advec_percent
         print "________leaving 2__________"
+
+    out_indices = np.where((eta1_orig < 0.) & (eta1_orig > 1.)
+                        & (eta2_orig < 0.) & (eta2_orig > 1.))
 
     if (np.size(out_indices) > 0):
         print "ERROR in contain_particles(): "\
@@ -296,13 +318,24 @@ def contain_particles_1D(where_char, where_out, last_advec_percent,\
     # We treat external external boundary conditions here,
     # ie when [npat, face] = [npat', face']
     where_not_dirichlet = np.where((where_char[where_out] != list_pats)
-                                       & (np.asarray(list_faces) != face))[0]
+                                   & (np.asarray(list_faces) != face))[0]
+    where_is_dirichlet = np.where((where_char[where_out] == list_pats)
+                                  & (np.asarray(list_faces) == face))[0]
     if np.shape(where_out)[0]!=1:
+        where_dirichlet = [where_out[0][where_is_dirichlet],
+                           where_out[1][where_is_dirichlet]]
         where_out = [where_out[0][where_not_dirichlet],
                      where_out[1][where_not_dirichlet]]
     else:
+        where_dirichlet = where_out[0][where_is_dirichlet]
+        np.reshape(where_dirichlet,(1, np.size(where_dirichlet)))
         where_out = where_out[0][where_not_dirichlet]
         np.reshape(where_out,(1, np.size(where_out)))
+
+    # Treating DIRICHLET BC .........................
+    # We can not advec any further so we impose the percent to complete state
+    last_advec_percent[where_dirichlet] = 1.
+    #................................................
 
     if np.size(where_out) > 0:
         where_orig = where_char[where_out]
@@ -347,6 +380,7 @@ def contain_particles_1D(where_char, where_out, last_advec_percent,\
             e1o = eta_out_orig[where_out]
             e2o = eta_in_orig[where_out]
             wc = where_char[where_out]
+
             contain_particles(e1o, e2o, \
                           [advec1, advec2], \
                           eta1_out_xmin, eta2_out_xmin, \
@@ -362,6 +396,7 @@ def contain_particles_1D(where_char, where_out, last_advec_percent,\
             e1o = eta_in_orig[where_out]
             e2o = eta_out_orig[where_out]
             wc = where_char[where_out]
+
             contain_particles(e1o, e2o, \
                               [advec1, advec2], \
                               eta1_out_xmin, eta2_out_xmin, \
@@ -371,6 +406,11 @@ def contain_particles_1D(where_char, where_out, last_advec_percent,\
             eta_out_orig[where_out] = eta2_out_xmin
             where_char[where_out] = wc
             last_advec_percent[where_out] = this_percent
+    # else:
+    #     print ""
+    #     print " where out is empty"
+    #     print ""
+
 
 
 def derivs_eta(geo, npat, eta1_mat, eta2_mat, advec):
@@ -391,17 +431,25 @@ def derivs_eta(geo, npat, eta1_mat, eta2_mat, advec):
     #     sqrt_g[0,NPTS1-1] = 0.5*(sqrt_g[NPTS1-2,NPTS2-1] + sqrt_g[NPTS1-1,NPTS2-2])
     # print np.where(sqrt_g == 0.)
 
-    if (np.size(np.where(sqrt_g == 0.)) > 0):
+    wjm = np.where(abs(sqrt_g) < epsilon2)
+    if (np.size(wjm) > 0):
         print "Warning : singular point"
-        print np.size(np.where(sqrt_g == 0. ))
+        print np.size(wjm)
         # import os, sys
         # sys.exit("STOP")
-        sqrt_g[np.where(sqrt_g == 0.)] = epsilon2
+        sqrt_g[wjm] = epsilon2
 
     # Calculating the value of the second part of the MoC
     rhs1 = (advec[0] * d2F2 - advec[1] * d2F1) / sqrt_g
     rhs2 = (advec[1] * d1F1 - advec[0] * d1F2) / sqrt_g
 
+    # print "a 0 =", advec[0]
+    # print "d2f2 =", d2F2
+    # print "a 1 =", advec[1]
+    # print "d2f1 =", d2F1
+    # print "sqrtg = ", sqrt_g
+    # print "advec1 in pat ",rhs1
+    # print "advec2 in pat ",rhs2
     return rhs1, rhs2
 
 
@@ -421,16 +469,20 @@ def jacobian(geo, npat, eta1_mat, eta2_mat):
     u = eta1_mat[:, 0]
     v = eta2_mat[0, :]
 
-    if ((np.size(np.where(u < 0.)) > 0) or (np.size(np.where(u > 1.)) > 0)):
+    wum = np.where(u < 0.)
+    wup = np.where(u > 1.)
+    if ((np.size(wum) > 0) or (np.size(wup) > 0)):
         print "Warning: in jacobian() from charac_feet.py:"
         print "         Found a value outside [0,1] in vector u"
-        u[np.where(u < 0.)] = 0.
-        u[np.where(u > 1.)] = 1.
-    if ((np.size(np.where(v < 0.)) > 0) or (np.size(np.where(v > 1.)) > 0)):
+        u[wum] = 0.
+        u[wup] = 1.
+    wvm = np.where(v < 0.)
+    wvp = np.where(v > 1.)
+    if ((np.size(wvm) > 0) or (np.size(wvp) > 0)):
         print "Warning: in jacobian() from charac_feet.py:"
-        print "         Found a value outside [0,1] in vector u"
-        v[np.where(v < 0.)] = 0.
-        v[np.where(v > 1.)] = 1.
+        print "         Found a value outside [0,1] in vector v"
+        v[wvm] = 0.
+        v[wvp] = 1.
 
     d1F1 = np.zeros((NPTS1, NPTS2))
     d2F1 = np.zeros((NPTS1, NPTS2))
@@ -444,12 +496,13 @@ def jacobian(geo, npat, eta1_mat, eta2_mat):
     d2F2 = jac[npat,3,:,:]
 
     # Getting rid of close to 0 values
-    d1F1[np.where(abs(d1F1) <= 10 ** -14)] = 0.0
-    d2F1[np.where(abs(d2F1) <= 10 ** -14)] = 0.0
-    d1F2[np.where(abs(d1F2) <= 10 ** -14)] = 0.0
-    d2F2[np.where(abs(d2F2) <= 10 ** -14)] = 0.0
+    d1F1[np.where(abs(d1F1) <= small_epsilon)] = 0.0
+    d2F1[np.where(abs(d2F1) <= small_epsilon)] = 0.0
+    d1F2[np.where(abs(d1F2) <= small_epsilon)] = 0.0
+    d2F2[np.where(abs(d2F2) <= small_epsilon)] = 0.0
 
     return [d1F1, d2F1, d1F2, d2F2]
+
 
 def get_phy_char(npatchs, advec, which_advec, tstep, dt):
     """

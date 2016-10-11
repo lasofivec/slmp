@@ -122,4 +122,5 @@ def write_globals(path, str_num) :
 #TODO : division of 2 integers => float ? from __future__ import division
 
 epsilon = 0.01
-epsilon2 = 10**-14
+epsilon2 = 10**-12
+small_epsilon = 10**-14

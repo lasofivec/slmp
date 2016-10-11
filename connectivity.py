@@ -11,6 +11,17 @@ for dict in geo.connectivity:
 # TODO: how to treat exterior boundary conditions?
 
 # For periodic BC we do this by hand:
+if domain == PINCHEDDISK_5p_domain or domain == DISK_5p_domain:
+    list_faces_duplicata  = [[0,0], [0,1], [0,2], [1,0], [1,1], [2,0], [2,3], [3,0]]
+    list_faces_duplicated = [[1,2], [4,3], [3,3], [2,1], [4,0], [4,1], [3,1], [4,2]]
+    geo.external_faces.pop(0)
+    geo.external_faces.pop(0)
+    geo.external_faces.pop(0)
+    geo.external_faces.pop(0)
+    geo.external_faces.append([0,3])
+    geo.external_faces.append([1,3])
+    geo.external_faces.append([2,2])
+    geo.external_faces.append([3,2])
 if domain == SQUARE_2p_domain:
     list_faces_duplicata.append([1,2])
     list_faces_duplicated.append([0,0])

@@ -32,3 +32,4 @@
    b. Choose a code name for the geometry;
    c. Associate it to a unique key
 5. Edit the get_geometry function in reading_geometry;
+6. Create your input file
