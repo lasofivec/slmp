@@ -185,7 +185,7 @@ plot_nrb_dens(zn, show = True, save = False)
 
 plot_errors([list_err_inf, list_err_l2, list_minval, list_maxval, list_mass])
 
-##TO SAVE RESULTS :
+# # TO SAVE RESULTS :
 # maxerr = np.max(final_errs[0])*10.
 # file = open('resultats.txt', 'a')
 # string = str(NPTS1) + " " + str(NPTS2) + " " + str(NPTS1*NPTS2) + " " + str(dt) + " " + str(tmax) + " " + str(maxerr) + "\n"

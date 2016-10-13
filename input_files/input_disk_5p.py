@@ -7,8 +7,8 @@ DEBUG_MODE = False
 # *********************************************
 domain = DISK_5p_domain
 # Discretization:
-NPTS1 = 40
-NPTS2 = 40
+NPTS1 = 100
+NPTS2 = 100
 
 # *********************************************
 # Definition of simulation
@@ -21,7 +21,7 @@ viewstep = 10
 # Definition of initial distribution
 # *********************************************
 which_f = "GAUSSIAN_DISTRIBUTION"
-dist_center_x = 0.62
+dist_center_x = 0.3
 dist_center_y = 0.4
 
 # *********************************************

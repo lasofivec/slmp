@@ -175,33 +175,32 @@ def contain_particles(eta1_mat, eta2_mat,
     # Separating advection:
     [advec_coef1, advec_coef2] = advec_coeffs
 
-    # # Rounding results:
-    # eta1_orig[np.where(abs(eta1_orig) < epsilon2)]=0.
-    # eta2_orig[np.where(abs(eta2_orig) < epsilon2)]=0.
-    # eta1_orig[np.where(abs(1. - eta1_orig) < epsilon2)]=1.
-    # eta2_orig[np.where(abs(1. - eta2_orig) < epsilon2)]=1.
-
-    if DEBUG_MODE:
-        print "___________________________________________"
-        print "     ---------- eta mat"
-        print "       ", eta1_mat
-        print "       ", eta2_mat
-        print "       ", "---------- advec"
-        print "       ", advec_coef1
-        print "       ", advec_coef2
-        print "       ", "---------- origins"
-        print "       ", eta1_orig
-        print "       ", eta2_orig
-        print "       ", "---------- where"
-        print "       ", where_char
-        print "       ", "---------- last percent"
-        print "       ", last_advec_percent
-        print "___________________________________________"
-
     # Rounding off small values to avoid useless loops :
     eta1_orig[np.where(abs(eta1_orig) < epsilon2)] = 0.
     eta2_orig[np.where(abs(eta2_orig) < epsilon2)] = 0.
+    eta1_orig[np.where(abs(1. - eta1_orig) < epsilon2)]=1.
+    eta2_orig[np.where(abs(1. - eta2_orig) < epsilon2)]=1.
+    advec_coef1[np.where(abs(advec_coef1) < epsilon2)] = 0.
+    advec_coef2[np.where(abs(advec_coef2) < epsilon2)] = 0.
     #...................................................
+
+    if DEBUG_MODE :
+        print "___________________________________________"
+        print "----- eta mat"
+        print eta1_mat[0, 48]
+        print eta2_mat[0, 48]
+        print "---------- advec"
+        print advec_coef1[0, 48]
+        print advec_coef2[0, 48]
+        print "---------- origins"
+        print eta1_orig[0, 48]
+        print eta2_orig[0, 48]
+        print "---------- where"
+        print where_char[0, 48]
+        print "---------- last percent"
+        print last_advec_percent[0, 48]
+        print "___________________________________________"
+
 
     # For particles that stay in the domain
     in_indices = np.where((eta1_orig >= 0.) & (eta1_orig <= 1.)
@@ -220,7 +219,7 @@ def contain_particles(eta1_mat, eta2_mat,
         return
 
     # For particles that go out on the x axis, below 0 :
-    where_out = np.where((eta1_orig < 0.) & (abs(eta1_orig) > epsilon2))
+    where_out = np.where((eta1_orig < 0.) & (last_advec_percent < 1.))
     if np.size(where_out) > 0:
         contain_particles_1D(where_char, where_out, last_advec_percent,\
                              False, True, \
@@ -230,7 +229,7 @@ def contain_particles(eta1_mat, eta2_mat,
                              1)
 
     # For particles that go out on the x axis, above 1 :
-    where_out = np.where(eta1_orig - 1. > 0.)
+    where_out = np.where((eta1_orig - 1. > 0.) & (last_advec_percent < 1.))
     if np.size(where_out) > 0:
         contain_particles_1D(where_char, where_out, last_advec_percent,\
                              True, True, \
@@ -240,7 +239,7 @@ def contain_particles(eta1_mat, eta2_mat,
                              3)
 
     # For particles that go out on the y axis, below 0 :
-    where_out = np.where((eta2_orig < 0.) & (abs(eta2_orig) > epsilon2))
+    where_out = np.where((eta2_orig < 0.) & (last_advec_percent < 1.))
     if np.size(where_out) > 0:
         contain_particles_1D(where_char, where_out, last_advec_percent,\
                              False, False, \
@@ -250,7 +249,7 @@ def contain_particles(eta1_mat, eta2_mat,
                              0)
 
     # For particles that go out on the y axis, above 1 :
-    where_out = np.where(eta2_orig - 1.0 > 0.)
+    where_out = np.where((eta2_orig - 1.0 > 0.) & (last_advec_percent < 1.))
     if np.size(where_out) > 0:
         contain_particles_1D(where_char, where_out, last_advec_percent,\
                              True, False, \
@@ -258,7 +257,6 @@ def contain_particles(eta1_mat, eta2_mat,
                              advec_coef2, advec_coef1, \
                              eta2_orig, eta1_orig, \
                              2)
-
 
     eta1_orig[np.where(abs(eta1_orig) < epsilon2)] = 0.
     eta2_orig[np.where(abs(eta2_orig) < epsilon2)] = 0.
@@ -272,8 +270,8 @@ def contain_particles(eta1_mat, eta2_mat,
         print "percent :", last_advec_percent
         print "________leaving 2__________"
 
-    out_indices = np.where((eta1_orig < 0.) & (eta1_orig > 1.)
-                        & (eta2_orig < 0.) & (eta2_orig > 1.))
+    out_indices = np.where((eta1_orig < 0.) | (eta1_orig > 1.)
+                        | (eta2_orig < 0.) | (eta2_orig > 1.))
 
     if (np.size(out_indices) > 0):
         print "ERROR in contain_particles(): "\

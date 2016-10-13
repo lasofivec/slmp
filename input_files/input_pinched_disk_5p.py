@@ -7,31 +7,31 @@ DEBUG_MODE = False
 # *********************************************
 domain = PINCHEDDISK_5p_domain
 # Discretization:
-NPTS1 = 60
-NPTS2 = 60
+NPTS1 = 90
+NPTS2 = 90
 
 # *********************************************
 # Definition of simulation
 # *********************************************
-tmax = 10
-dt   = 0.1
+tmax = 9
+dt   = 0.05
 viewstep = 10
 
 # *********************************************
 # Definition of initial distribution
 # *********************************************
-which_f = "GAUSSIAN_DISTRIBUTION" 
-dist_center_x = 0.2#-0.65
-dist_center_y = 0.#4
+which_f = "GAUSSIAN_DISTRIBUTION"
+dist_center_x = -0.65
+dist_center_y = 0.
 
 # *********************************************
 # Definition of advection coefficient
 # *********************************************
 which_advec = ADVEC_CNST
-advec_dir1 = 0.05#-0.
-advec_dir2 = 0.#-0.025
+advec_dir1 = 0.15
+advec_dir2 = 0.
 
 #**********************************************
 # Definition of interpolation method used
 # *********************************************
-which_interp = INTER_SLL3 
+which_interp = INTER_SLL3
