@@ -5,7 +5,7 @@ DEBUG_MODE = False
 # *********************************************
 # Definition of the geometry
 # *********************************************
-domain = PINCHEDDISK_5p_domain
+domain = DISK_5p_domain
 # Discretization:
 NPTS1 = 100
 NPTS2 = 100
