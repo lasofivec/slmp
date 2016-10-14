@@ -7,7 +7,7 @@ DEBUG_MODE = False
 # *********************************************
 domain = SQUARE_4p_domain
 # Discretization:
-NPTS1 = 100
+NPTS1 = 60
 NPTS2 = NPTS1
 
 # *********************************************
@@ -15,7 +15,7 @@ NPTS2 = NPTS1
 # *********************************************
 tmax = 1.
 dt   = 0.0005
-viewstep = 100
+viewstep = 40
 
 # *********************************************
 # Definition of initial distribution

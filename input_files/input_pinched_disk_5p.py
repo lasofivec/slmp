@@ -7,15 +7,15 @@ DEBUG_MODE = False
 # *********************************************
 domain = PINCHEDDISK_5p_domain
 # Discretization:
-NPTS1 = 100
-NPTS2 = 100
+NPTS1 = 40
+NPTS2 = 40
 
 # *********************************************
 # Definition of simulation
 # *********************************************
-tmax = 9
-dt   = 0.05
-viewstep = 10
+tmax = 1.5
+dt   = 0.005
+viewstep = 50
 
 # *********************************************
 # Definition of initial distribution
