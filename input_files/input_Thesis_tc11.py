@@ -15,13 +15,13 @@ NPTS2 = 80
 # *********************************************
 tmax = 1.
 dt   = 0.0005
-viewstep = 50
+viewstep = 500
 
 # *********************************************
 # Definition of initial distribution
 # *********************************************
 which_f = "GAUSSIAN_DISTRIBUTION"
-dist_center_x = 0.5
+dist_center_x = 0.46
 dist_center_y = 0.
 
 # *********************************************

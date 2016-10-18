@@ -17,7 +17,7 @@ def get_geometry(domain):
         import caid.cad_geometry as cg
         geo = cg.cad_geometry(ls_domain)
     elif (domain == 3) :
-        ls_domain = "../domains/pinched_disk_5mp.xml"
+        ls_domain = "../domains/pinched_disk_5mp_eps09.xml"
         import caid.cad_geometry as cg
         geo = cg.cad_geometry(ls_domain)
     elif (domain == 4) :

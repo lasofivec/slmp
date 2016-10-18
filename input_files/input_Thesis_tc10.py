@@ -7,8 +7,8 @@ DEBUG_MODE = False
 # *********************************************
 domain = PINCHEDDISK_5p_domain
 # Discretization:
-NPTS1 = 100
-NPTS2 = 100
+NPTS1 = 50
+NPTS2 = 50
 
 # *********************************************
 # Definition of simulation
