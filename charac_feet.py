@@ -126,15 +126,15 @@ def rk4(npat, xn, yn, dt, rhs_func):
     ynp1 = yn - advec_y
     last_advec_percent = np.zeros_like(xn)
     where_char = np.zeros_like(xn, dtype=np.int) + npat
+
     if DEBUG_MODE:
-        print "...................... last call ....................."
+        print "............... last call to contain particles ................."
+
     contain_particles(xn, yn,
                       [advec_x, advec_y],
                       xnp1, ynp1,
                       where_char, last_advec_percent)
 
-    print " last advec percent = ", last_advec_percent[np.where(last_advec_percent < 1)]
-    print "where = ", np.where(last_advec_percent < 1)
     return xnp1, ynp1, where_char
 
 
@@ -283,6 +283,7 @@ def contain_particles(eta1_mat, eta2_mat,
         import os, sys
         sys.exit("STOP")
 
+
 def contain_particles_1D(where_char, where_out, last_advec_percent,\
                          is_above1, is_eta1,\
                          eta_out, eta_in, \
@@ -418,36 +419,17 @@ def derivs_eta(geo, npat, eta1_mat, eta2_mat, advec):
 
     # Computing the jacobian determinant
     sqrt_g = d1F1 * d2F2 - d1F2 * d2F1
-    # print "++++++ jacobien = ", sqrt_g
-
-    # Approximating the 0 values of sqrtg to avoid Nans
-    # if (np.size(np.where(sqrt_g == 0.)) > 0) :
-    #     print "heeeere", np.where(sqrt_g == 0.)
-    #     sqrt_g[0,0] = 0.5*(sqrt_g[1,0] + sqrt_g[0,1])
-    #     sqrt_g[NPTS1-1,0] = 0.5*(sqrt_g[NPTS1-2,0] + sqrt_g[NPTS1-1,1])
-    #     sqrt_g[0,NPTS2-1] = 0.5*(sqrt_g[1,NPTS2-1] + sqrt_g[0,NPTS2-2])
-    #     sqrt_g[0,NPTS1-1] = 0.5*(sqrt_g[NPTS1-2,NPTS2-1] + sqrt_g[NPTS1-1,NPTS2-2])
-    # print np.where(sqrt_g == 0.)
 
     wjm = np.where(abs(sqrt_g) < epsilon2)
     if (np.size(wjm) > 0):
         print "Warning : singular point"
         print np.size(wjm)
-        # import os, sys
-        # sys.exit("STOP")
         sqrt_g[wjm] = epsilon2
 
     # Calculating the value of the second part of the MoC
     rhs1 = (advec[0] * d2F2 - advec[1] * d2F1) / sqrt_g
     rhs2 = (advec[1] * d1F1 - advec[0] * d1F2) / sqrt_g
 
-    # print "a 0 =", advec[0]
-    # print "d2f2 =", d2F2
-    # print "a 1 =", advec[1]
-    # print "d2f1 =", d2F1
-    # print "sqrtg = ", sqrt_g
-    # print "advec1 in pat ",rhs1
-    # print "advec2 in pat ",rhs2
     return rhs1, rhs2
 
 

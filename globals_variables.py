@@ -118,9 +118,6 @@ def write_globals(path, str_num) :
      f.write('dist_center_y = '+ str(dist_center_y)+'\n')
 
 
-
-#TODO : division of 2 integers => float ? from __future__ import division
-
 epsilon = 0.01
 epsilon2 = 10**-12
 small_epsilon = 10**-14

@@ -5,7 +5,7 @@ from connectivity import get_face, connectivity
 from geometry import geo
 
 
-def compute_weights(h):
+def compute_weights2d(h):
     """
     Computation of weights to compute slopes for interpolation.
     This function is inspired by the article:
@@ -15,26 +15,6 @@ def compute_weights(h):
 
     h : step of discretization"""
 
-    # Initialization
-    w_plus  = np.zeros(10)
-    w_minus = np.zeros(10)
-
-    w_plus[0] = 8.03847585E-1
-    w_plus[1] = -2.15390339E-1
-    w_plus[2] = 5.77137695E-2
-    w_plus[3] = -1.54647393E-2
-    w_plus[4] = 4.14518786E-3
-    w_plus[5] = -1.11379781E-3
-    w_plus[6] = 3.01146127E-4
-    w_plus[7] = -7.97151512E-5
-    w_plus[8] = 1.77144780E-5
-    w_plus[9] = -2.21430976E-6
-
-    w_minus = -w_plus
-
-    return [w_plus/h, w_minus/h]
-
-def compute_weights2d(h):
     weights1 = np.zeros((5, 3))
 
     weights1[1, 0] = - 0.822695035460993 / 2.0
@@ -56,7 +36,8 @@ def compute_weights2d(h):
     return weights1/h
 
 
-def compute_slopes(tab, list_patchs, jac):
+
+def compute_slopes(tab, list_patchs, jac, tstep=0.):
     """
     Function that computes the slopes (gradients) of the function at
     the boundaries of the patch.
@@ -118,68 +99,60 @@ def compute_derivatives_bound(data, list_patchs):
 
         for face in range(4):
 
-            # Flags to know if there are dirichlet BC
-            up_isdir = False
-            dw_isdir = False
-            lf_isdir = False
-            rg_isdir = False
-
-            if (face == 0) or (face == 2):
-                deriv_func = np.zeros(NPTS2)
-            if (face == 1) or (face == 3):
-                deriv_func = np.zeros(NPTS1)
+            # Initialization
+            deriv_func = np.zeros(NPTS2)
 
             # Computation:
             if face == 0:
+                #Bottom-Left neighbors value and face:
+                [[v_bl], [f_bl]] = connectivity(v1, (f1+1)%4)
+                #Bottom-Right neighbors value and face:
+                [[v_br], [f_br]] = connectivity(v3, (f3-1)%4)
 
-                if (f3 == 3) and (npat == v3):
-                    up_isdir = True
-                if (f1 == 1) and (npat == v1):
-                    dw_isdir = True
-
-                if (v0 == npat) and (f0 == face) :
-                    deriv_func = finite_diff_internal_fwd(data[npat], f0, NPTS2)
-                else :
-                    deriv_func = cubic_spline_approximation(data[npat], face, \
-                                                   data[v0], f0, NPTS2)
+                deriv_func = cubic_spline_approximation2d(data[npat], face, \
+                                                        data[v0], f0, # bottom
+                                                        data[v1], (f1+1)%4, # left
+                                                        data[v_bl], f_bl, #BL
+                                                        data[v3], (f3-1)%4, # right
+                                                        data[v_br], f_br, # BR
+                                                        NPTS2)
             elif face == 1:
-
-                if (f2 == 2) and (npat == v2):
-                    up_isdir = True
-                if (f0 == 0) and (npat == v0):
-                    dw_isdir = True
-
-                if (v1 == npat) and (f1 == face) :
-                    deriv_func = finite_diff_internal_fwd(data[npat], f1, NPTS2)
-                else :
-                    deriv_func = cubic_spline_approximation(data[npat], face, \
-                                                   data[v1], f1, NPTS2)
+                # Bottom-left:
+                [[v_bl], [f_bl]] = connectivity(v0, (f0-1)%4)
+                # Upper-left
+                [[v_ul], [f_ul]] = connectivity(v2, (f2+1)%4)
+                deriv_func = cubic_spline_approximation2d(data[npat], face, \
+                                                        data[v1], f1, # left
+                                                        data[v0], (f0-1)%4, # bottom
+                                                        data[v_bl], f_bl, #BL
+                                                        data[v2], (f2+1)%4, # upper
+                                                        data[v_ul], f_ul, # UL
+                                                        NPTS1)
             elif face == 2:
-
-                if (f3 == 3) and (npat == v3):
-                    up_isdir = True
-                if (f1 == 1) and (npat == v1):
-                    dw_isdir = True
-
-                if (v2 == npat) and (f2 == face) :
-                    deriv_func = - finite_diff_internal_fwd(data[npat], \
-                                                            face, NPTS2)
-                else :
-                    deriv_func = - cubic_spline_approximation(data[npat], \
-                                                    face, data[v2], f2, NPTS2)
+                # Upper-Left neighbors value and face:
+                [[v_ul], [f_ul]] = connectivity(v1, (f1-1)%4)
+                # Upper-Right neighbors value and face:
+                [[v_ur], [f_ur]] = connectivity(v3, (f3+1)%4)
+                deriv_func = - cubic_spline_approximation2d(data[npat], face, \
+                                                          data[v2], f2,# upper
+                                                          data[v1], (f1-1)%4, # left
+                                                          data[v_ul], f_ul, #UL
+                                                          data[v3], (f3+1)%4, # right
+                                                          data[v_ur], f_ur, # UR
+                                                          NPTS2)
             elif face == 3:
+                # Bottom-right:
+                [[v_br], [f_br]] = connectivity(v0, (f0+1)%4)
+                # Upper-right
+                [[v_ur], [f_ur]] = connectivity(v2, (f2-1)%4)
+                deriv_func = - cubic_spline_approximation2d(data[npat], face, \
+                                                          data[v3], f3, # right
+                                                          data[v0], (f0+1)%4, # bottom
+                                                          data[v_br], f_br, #BR
+                                                          data[v2], (f2-1)%4, # upper
+                                                          data[v_ur], f_ur, # UR
+                                                          NPTS1)
 
-                if (f2 == 2) and (npat == v2):
-                    up_isdir = True
-                if (f0 == 0) and (npat == v0):
-                    dw_isdir = True
-
-                if (v3 == npat) and (f3 == face) :
-                    deriv_func = - finite_diff_internal_fwd(data[npat], face, \
-                                                            NPTS2)
-                else :
-                    deriv_fun = - cubic_spline_approximation(data[npat], face, \
-                                                   data[v3], f3, NPTS2)
             else:
                 import sys, os
                 sys.exit("Error in compute_derivatives_bound():" + \
@@ -190,48 +163,12 @@ def compute_derivatives_bound(data, list_patchs):
     return derivatives
 
 
-def finite_diff_internal_fwd(data, face, NPTS) :
-    fip0 = get_face(data, face, indx=0)
-    fip1 = get_face(data, face, indx=1)
-    fip2 = get_face(data, face, indx=2)
-    fip3 = get_face(data, face, indx=3)
-    fip4 = get_face(data, face, indx=4)
-    d2f  = (-25./12.*fip0 + 4.*fip1 - 3.*fip2 + 4./3.*fip3 - 0.25*fip4) \
-           * (NPTS - 1)
-    return d2f
-
-
-def cubic_spline_approximation(data1, face1, data2, face2, NPTS) :
-    """
-    Computation of slopes using the cubic spline approximation.
-    This function is inspired by the article:
-    "Hermite Spline Interpolation on Patches for a Parallel
-     Solving of the Vlasov-Poisson Equation"
-    by Nicolas Crouseilles, Guillaume Latu, Eric Sonnendrucker
-
-    data1 : array containing the data on patch 1 (P1)
-    face1 : index of the face of P1 where P1 meets P2
-    data2 : array containing the data on patch 2 (P2)
-    face2 : index of the face of P2 where P2 meets P1
-    NPTS  : number of points on the face1 and face2.
-    """
-
-    h = 1./NPTS
-    [wp, wm] = compute_weights(h)
-
-    res = 0.
-    for j in range(10):
-        fjp = get_face(data1, face1, indx=j+1)
-        fjm = get_face(data2, face2, indx=j+1)
-        res = res + wp[j] * fjp + wm[j] * fjm
-
-    return res
-
-def cubic_spline_approximation2d(data_bl, face_bl,
-                                 data_br, face_br,
+def cubic_spline_approximation2d(data_u, face_u,
+                                 data_b, face_b,
                                  data_ul, face_ul,
+                                 data_bl, face_bl,
                                  data_ur, face_ur,
-#                                 up_isdir, right_isdir,
+                                 data_br, face_br,
                                  NPTS) :
     """
     Computation of 2D slopes using the cubic spline approximation.
@@ -239,30 +176,34 @@ def cubic_spline_approximation2d(data_bl, face_bl,
     "Hermite Spline Interpolation on Patches for a Parallel
      Solving of the Vlasov-Poisson Equation"
     by Nicolas Crouseilles, Guillaume Latu, Eric Sonnendrucker
-
-    data1 : array containing the data on patch 1 (P1)
-    face1 : index of the face of P1 where P1 meets P2
-    data2 : array containing the data on patch 2 (P2)
-    face2 : index of the face of P2 where P2 meets P1
-    NPTS  : number of points on the face1 and face2.
-    up_isdir :
-    right_isdir :
     """
 
     h = 1./NPTS
     wp = compute_weights2d(h)
-    # Determining sense:
 
-    res = 0.
-    for l in range(5):
-        for k in range(1,7):
-            # cases for l<0
-            fmkml = get_face(data_bl, face_bl, indx=l)[-k-1]
-            fpkml = get_face(data_br, face_br, indx=l)[k]
-            # cases for l>0
-            fmkpl = get_face(data_ul, face_ul, indx=l)[-k-1]
-            fpkpl = get_face(data_ur, face_ur, indx=l)[k]
+    res = np.zeros(NPTS1)
+    for l in range(3):
+        for k in range(1,5):
+            # initialization:
+            fmkml = np.zeros(NPTS1)
+            fmkpl = np.zeros(NPTS1)
+            fpkml = np.zeros(NPTS1)
+            fpkpl = np.zeros(NPTS1)
+            if l == 0 :
+                fmkml = get_face(data_b, face_b, indx=k)
+                fmkpl = get_face(data_b, face_b, indx=k) # copy, w0 = w0/2
+                fpkml = get_face(data_u, face_u, indx=k)
+                fpkpl = get_face(data_u, face_u, indx=k) # ok, w0 = w0/2
+            else :
+                fmkml[l:] = get_face(data_b, face_b, indx=k)[:-l]
+                fmkpl[:-l] = get_face(data_b, face_b, indx=k)[l:]
+                fpkml[l:] = get_face(data_u, face_u, indx=k)[:-l]
+                fpkpl[:-l] = get_face(data_u, face_u, indx=k)[l:]
+                for m in range(l):
+                    fmkml[m] = get_face(data_br, face_br, indx=k)[m]
+                    fmkpl[-m-1] = get_face(data_bl, face_bl, indx=k)[-m-1]
+                    fpkml[m] = get_face(data_ur, face_ur, indx=k)[m]
+                    fpkpl[-m-1] = get_face(data_ul, face_ul, indx=k)[-m-1]
             # updating result
-            res += wp[k,l] * (fmkml - fpkpl) - wp[k,l] * (fmkpl - fpkml)
-
+            res += wp[k,l] * (fmkml - fpkpl) + wp[k,l] * (fmkpl - fpkml)
     return res

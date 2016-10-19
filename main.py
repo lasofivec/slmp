@@ -8,53 +8,31 @@ from scipy import interpolate
 from math import pi
 from post_evaluation import *
 import connectivity as conn
-import derivatives2 as deriv
+import derivatives as deriv
 from globals_variables import *
+from advection import advec
 from charac_feet import *
+from selalib_interpol import mp_int
 import math
 
 
-#---------------------------
-#    advection definition
-#---------------------------
-advec = np.zeros((2, npatchs, NPTS1, NPTS2))
-if (which_advec == 0) :
-    #    for a scalar advection :
-    advec[0] = advec_dir1 #advection in 1st direction for all patches
-    advec[1] = advec_dir2 #advection in 2nd direction for all patches
-    print " Constant advection coefficients: "
-    for ipat in range(0, npatchs):
-        print "     For patch", ipat, " advection vector: ", advec[:, ipat, 0, 0]
-    print "___________________________________"
-    print ""
-if (which_advec == 1) :
-    #    for a centered circular motion advection : ########
-    advec = [-2.*np.pi*Y_mat, 2.*np.pi*X_mat]
-if (which_advec == 2) :
-    #    for an un centered circular motion advection : ########
-    advec = [Y_mat - centerb, -X_mat + centera]
+# arrays for storing the errors :
+list_err_inf = []
+list_err_l2  = []
+list_minval  = []
+list_maxval  = []
+list_mass    = []
 
-#------
+# arrays for storing the function :
 zn   = np.zeros((npatchs, NPTS1, NPTS2))
 znp1 = np.zeros((npatchs, NPTS1, NPTS2))
 zn   = np.copy(z).reshape((npatchs, NPTS1, NPTS2))
+
 
 # Plotting the initial state ***************************
 plot_nrb_dens(zn, show=True, save=True, tstep = 0)
 # ******************************************************
 
-
-#============================================================#
-#                                                            #
-#                METHODE SEMI-LAGRANGIENNE                   #
-#                                                            #
-#============================================================#
-
-# for npat in list_patchs:
-#     for face in range(4):
-#         print "connectivity = ", npat, face
-#         print " ........... = ", conn.connectivity(npat, face)
-# STOP
 
 # Computing the characteristics' origin
 char_eta1, char_eta2, where_char = get_pat_char(eta1, eta2, advec, dt)
@@ -70,17 +48,8 @@ for npat in list_patchs:
     char_eta1_id[npat][ind_out_pat] = 0.0
     char_eta2_id[npat][ind_out_pat] = 0.0
 
-# arrays for storing the errors :
-list_err_inf = []
-list_err_l2  = []
-list_minval  = []
-list_maxval  = []
-list_mass    = []
 
-
-# ......................................................
-from selalib_interpol import mp_int
-
+# ........................ TIME LOOP ..............................
 for tstep in range(1,nstep+1) :
 
     # Computing the limit conditions :
@@ -88,22 +57,13 @@ for tstep in range(1,nstep+1) :
 
     for npat in list_patchs :
         znp1[npat] = 0.
+
         # Interpolation on points that stay IN the domain :
         znp1[npat] = mp_int.interpolate_2d(zn[npat],
                                            char_eta1_id[npat],
                                            char_eta2_id[npat],
                                            eta1_slopes[npat],
                                            eta2_slopes[npat])
-
-        if np.size(np.where(np.abs(znp1[npat]) > 10**5)) > 0:
-            print "Gigantic value !! in Pat ", npat
-            import sys
-            sys.exit("Error !!")
-
-        if np.isnan(znp1[npat]).any() :
-            print "NaN value found !!!! in Pat ", npat
-            import sys
-            sys.exit("Error !!")
 
         # Interpolation on points that are OUTSIDE the domain
         # (has to be done point by point):
@@ -118,6 +78,18 @@ for tstep in range(1,nstep+1) :
                 zn[npat_char],
                 eta1_slopes[npat_char],
                 eta2_slopes[npat_char])
+
+        # Some control test
+        if np.size(np.where(np.abs(znp1[npat]) > 10**5)) > 0:
+            print "Gigantic value !! in Pat ", npat
+            import sys
+            sys.exit("Error !!")
+
+        if np.isnan(znp1[npat]).any() :
+            print "NaN value found !!!! in Pat ", npat
+            import sys
+            sys.exit("Error !!")
+
 
     zn = np.copy(znp1)
     zn[np.where(abs(zn) < 10**-10)] = 0.
@@ -139,39 +111,10 @@ for tstep in range(1,nstep+1) :
         list_maxval.append(list_errs[3])
         list_mass.append(list_errs[4])
         # Printing some results
-        print('= =========== TSTEP = ', tstep, "/", nstep, ' =========== =')
+        print '= =========== TSTEP = ', tstep, "/", nstep, ' =========== ='
         maxerr = np.max(list_errs[0])
         npat_maxerr = list_errs[0].index(np.max(list_errs[0]))
-        print(" --> For npat =", npat_maxerr, " maximum err l_inf =", maxerr)
-
-        # znp1 = np.zeros_like(znp1)
-        # pl.clf()
-        # mm = np.min(eta2_slopes); pp = np.max(eta2_slopes)
-        # levels = np.linspace(mm-0.01, pp+0.01, 25)
-        # for caca in range(10):
-        #     for npat in list_patchs:
-        #         znp1[npat][:, caca]   = eta2_slopes[npat][0]
-        #         znp1[npat][:,-caca-1] = eta2_slopes[npat][1]
-        #         pl.contourf(X_mat[npat], Y_mat[npat], znp1[npat], levels=levels)
-        # pl.colorbar(orientation='horizontal')
-        # pl.axis('image')
-        # pl.title("eta2_slopes")
-        # pl.show(block=True)
-        # # eta2 slopes
-        # znp1 = np.zeros_like(znp1)
-        # pl.clf()
-        # levels = np.linspace(-0.01+np.min(eta1_slopes), np.max(eta1_slopes)+0.01, 25)
-        # for caca in range(10):
-        #     for npat in list_patchs:
-        #         znp1[npat][:, caca]   = eta1_slopes[npat][0]
-        #         znp1[npat][:,-caca-1] = eta1_slopes[npat][1]
-        #         pl.contourf(X_mat[npat], Y_mat[npat], znp1[npat], levels=levels)
-
-        # pl.axis('image')
-        # pl.title("eta1_slopes")
-        # pl.colorbar(orientation='horizontal')
-        # pl.show(block=True)
-
+        print " --> For npat =", npat_maxerr, " maximum err l_inf =", maxerr
 
 
 # -------------------------------------------
@@ -184,10 +127,3 @@ comp_err_time(Xnp1, Ynp1, \
 plot_nrb_dens(zn, show = True, save = False)
 
 plot_errors([list_err_inf, list_err_l2, list_minval, list_maxval, list_mass])
-
-# # TO SAVE RESULTS :
-# maxerr = np.max(final_errs[0])*10.
-# file = open('resultats.txt', 'a')
-# string = str(NPTS1) + " " + str(NPTS2) + " " + str(NPTS1*NPTS2) + " " + str(dt) + " " + str(tmax) + " " + str(maxerr) + "\n"
-# file.write(string)
-# file.close()
