@@ -1,10 +1,13 @@
 import pylab as pl
+import matplotlib as mpl
 import prettyplotlib as ppl
 from prettyplotlib import brewer2mpl
 import numpy as np
 import os, sys
 from globals_variables import *
 from geometry import geo, X_mat, Y_mat, func_init
+
+
 
 # Plotting variables:
 levels = np.linspace(PLOT_VAL_MIN, PLOT_VAL_MAX, 25)
@@ -13,7 +16,7 @@ pl.style.use('thesisstyle')
 
 def plot_nrb_dens(zn, show = False, save = True, tstep = nstep) :
     title  = 'Computed solution of the advection equation at $t =$ ' \
-             + str(tstep)+'\n\nwith '+func_formula
+             + str(tstep*dt)+'\n with '+func_formula+"\n"
     listz = []
     pl.clf()
     for npat,nrb in enumerate(geo) :
@@ -32,6 +35,7 @@ def plot_nrb_dens(zn, show = False, save = True, tstep = nstep) :
     pl.xlabel('$x$')
     pl.ylabel('$y$')
     pl.axis('image')
+
     if (show) :
         pl.show(block=True)
     if (save) :
@@ -105,7 +109,7 @@ def comp_err_time(dx, dy, list_zi, list_errs, \
         pl.colorbar(orientation='horizontal')
         pl.grid()
         pl.title('Analytical solution of the advection equation at $t =$ '
-                 + str(tval) +'\n\nwith '+func_formula)
+                 + str(tval*dt) +'\n with '+func_formula+"\n")
         pl.xlabel('$x$')
         pl.ylabel('$y$')
         pl.axis('image')
@@ -131,6 +135,7 @@ def plot_errors(list_errs):
     list_minval  = list_errs[2]
     list_maxval  = list_errs[3]
     list_mass    = list_errs[4]
+    list_tmp     = list_errs[5]
 
     ntime = np.shape(list_err_inf)[0]
     npats = np.shape(list_err_inf)[1]
@@ -140,10 +145,8 @@ def plot_errors(list_errs):
     list_emt_min = []
     list_emt_max = []
     list_emt_mass = []
-    list_tmp = []
 
     for tstep in range(ntime) :
-        list_tmp.append(tstep*dt)
         max_err_inf = 0.
         max_err_l2  = 0.
         min_val = 0.
@@ -185,12 +188,21 @@ def plot_errors(list_errs):
     pl.close()
 
     fig, ax = pl.subplots(1)
-    pl.title("Time evolution of min and (1.-max) value of $f(t,x,y)$")
+    pl.title(r"Time evolution of $\min$ and $\max$ values of $f(t,x,y)$"+"\n")
     pl.xlabel("Time")
-    #    ppl.legend(ax, loc='upper left')
+
     pl.plot(list_tmp, list_emt_min, '-')
     pl.plot(list_tmp, list_emt_max, '--')
-    pl.legend(["min", "(1-max)/$N_1$/$N_2$"], loc='best')
+    if which_f == "COS_SIN_DISTRIBUTION":
+        str_min_val = "$(1+min)/N^2$"
+        str_max_val = "$(1-max)/N^2$"
+    elif which_f == "CONSTANT_DISTRIBUTION":
+        str_min_val = "$(0.5 - min_val)/N^2$"
+        str_max_val = "$(0.5 - max_val)/N^2$"
+    else:
+        str_min_val = "$min/N^2$"
+        str_max_val = "$(1-max)/N^2$"
+    pl.legend([str_min_val, str_max_val], loc='best')
     # *** Saving image :
     fig.savefig("results/results_figures/Minval_over_time.eps", \
                 format='eps', dpi=1000, facecolor='w', edgecolor='none')
@@ -199,8 +211,9 @@ def plot_errors(list_errs):
     pl.close()
 
     fig, ax = pl.subplots(1)
-    pl.title("Time evolution of the mass"
-             + "$\sum_{i,j}f(t,x_i,y_j) - \sum_{i,j}f(0,x_i,y_j)$")
+    pl.title("Time evolution of the mass "
+             + r"$\sum_{i,j}f(t,x_i,y_j) - \sum_{i,j}f(0,x_i,y_j)$"
+             + "\n")
     pl.xlabel("Time")
     #    ppl.legend(ax, loc='upper left')
     pl.plot(list_tmp, list_emt_mass, '-')

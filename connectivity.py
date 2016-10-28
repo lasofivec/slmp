@@ -22,6 +22,15 @@ if domain == PINCHEDDISK_5p_domain or domain == DISK_5p_domain:
     geo.external_faces.append([1,3])
     geo.external_faces.append([2,2])
     geo.external_faces.append([3,2])
+if domain == SQUARE_1p_domain:
+    list_faces_duplicata.append([0,0])
+    list_faces_duplicated.append([0,2])
+    list_faces_duplicata.append([0,1])
+    list_faces_duplicated.append([0,3])
+    geo.external_faces.pop(0)
+    geo.external_faces.pop(0)
+    geo.external_faces.pop(0)
+    geo.external_faces.pop(0)
 if domain == SQUARE_2p_domain:
     list_faces_duplicata.append([1,2])
     list_faces_duplicated.append([0,0])

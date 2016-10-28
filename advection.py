@@ -1,5 +1,6 @@
 import numpy as np
 from geometry import npatchs
+from geometry import X_mat, Y_mat
 from globals_variables import which_advec
 from globals_variables import NPTS1, NPTS2
 from globals_variables import advec_dir1, advec_dir2

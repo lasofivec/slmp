@@ -13,14 +13,14 @@ NPTS2 = NPTS1
 # *********************************************
 # Definition of simulation
 # *********************************************
-tmax = 11.
+tmax = 23.
 dt   = 0.05
 viewstep = 10
 
 # *********************************************
 # Definition of initial distribution
 # *********************************************
-which_f = "COS_SIN_DISTRIBUTION"#"X_DISTRIBUTION"
+which_f = "COS_SIN_DISTRIBUTION"
 
 # *********************************************
 # Definition of advection coefficient

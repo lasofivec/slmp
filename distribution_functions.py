@@ -69,7 +69,7 @@ def gaussian_pulse(x, y, xc, yc, sig, max):
       sig (real) : width of gaussian.
       max (real) : amplitude of gaussian. """
 
-    res = max * np.exp(-0.5 * ((np.mod(x+1.0, 3.)-1.-xc)**2/sig**2 + (y-yc)**2/sig**2))
+    res = max * np.exp(-0.5 * ((np.mod(x+1.0, 2.)-1.-xc)**2/sig**2 + (y-yc)**2/sig**2))
     return res
 
 

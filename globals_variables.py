@@ -26,6 +26,7 @@ viewstep = 10
 which_f = DIST_GAUSS
 dist_center_x = 0.5
 dist_center_y = 0.5
+sig = 0.04
 which_advec = ADVEC_CNST
 which_interp = INTER_SLL3
 DEBUG_MODE = False
@@ -78,22 +79,22 @@ if which_f == "CONSTANT_DISTRIBUTION" :
     PLOT_VAL_MAX = 1.
     PLOT_VAL_MIN = -1.
     comap = "RdBu" #"Spectral"
-    func_formula='$f(x,y) = 0.5$'
+    func_formula=r'$f(x,y) = 0.5$'
 elif which_f == "X_DISTRIBUTION" :
     PLOT_VAL_MAX = 2.
     PLOT_VAL_MIN = 0.
     comap = "RdBu"
-    func_formula='$f(x,y) = x$'
+    func_formula=r'$f(x,y) = x$'
 elif which_f == "COS_SIN_DISTRIBUTION" :
     PLOT_VAL_MAX = 1.
     PLOT_VAL_MIN = -1.
     comap = "RdBu" #"Spectral"
-    func_formula='$\cos{(2\pi x)}*\sin{(2\pi y)}$'
+    func_formula=r'$f(x,y) = \cos{(2\pi x)}\sin{(2\pi y)}$'
 elif which_f == "GAUSSIAN_DISTRIBUTION":
     PLOT_VAL_MAX = 1.
     PLOT_VAL_MIN = -0.2
     comap = 'plasma'
-    func_formula="$\exp(-0.5(((x+1)mod(2)-1.5)^2/0.04^2 + (y-0.5)^2/0.04^2))$"
+    func_formula=r"$f(x,y) = \exp(-\frac{1}{2\sigma^2}((x-x_c)^2 + (y-y_c)^2))$,"+"\n" +r" where $x_c =$"+str(dist_center_x)+r" $y_c =$"+str(dist_center_y)+r" and $\sigma = $"+str(sig)
 else:
     print "Please define the proper values for vmin and vmax"
     import sys

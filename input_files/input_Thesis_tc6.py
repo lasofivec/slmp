@@ -7,7 +7,7 @@ DEBUG_MODE = False
 # *********************************************
 domain = SQUARE_4p_domain
 # Discretization:
-NPTS1 = 60
+NPTS1 = 100
 NPTS2 = NPTS1
 
 # *********************************************

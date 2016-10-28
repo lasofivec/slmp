@@ -17,6 +17,7 @@ import math
 
 
 # arrays for storing the errors :
+list_time = []
 list_err_inf = []
 list_err_l2  = []
 list_minval  = []
@@ -98,6 +99,7 @@ for tstep in range(1,nstep+1) :
     # Printing of results and time-relative error
     #------------------------------------------------
     if ((tstep == 1)or(tstep%viewstep == 0)or(tstep == nstep-1)) :
+        list_time.append(tstep*dt)
         # Plotting the density:
         listZ = plot_nrb_dens(zn, tstep = tstep)
         # Computing the characteristic feet in PHYSICAL space at tnp1 :
@@ -126,4 +128,4 @@ comp_err_time(Xnp1, Ynp1, \
               tval = tstep)
 plot_nrb_dens(zn, show = True, save = False)
 
-plot_errors([list_err_inf, list_err_l2, list_minval, list_maxval, list_mass])
+plot_errors([list_err_inf, list_err_l2, list_minval, list_maxval, list_mass, list_time])
