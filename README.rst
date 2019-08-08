@@ -1,4 +1,5 @@
-# Requirements:
+Requirements:
+============
 
   * python (< 3.)
   * numpy
@@ -11,15 +12,15 @@
     	$ cp thesisstyle.mplstyle ~/.matplotlib/stylelib/
     (you might need to create this path)
 
-# To execute main program:
+To execute main program:
+====
+```
+  cd main_program
+  python main.py <$INPUT_FILE>
+```
 
-  $ cd main_program
-  $ python main.py <$INPUT_FILE>
-
-
-#----------------------------------------
-# How to create a new Geometry and test
-#----------------------------------------
+How to create a new Geometry and test
+----------------------------------------
 
 1. Create Geometry using CAID;
 2. Export the created geometry:
