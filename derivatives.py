@@ -16,15 +16,15 @@ def compute_weights2d(h):
     h : step of discretization"""
 
     weights1 = np.zeros((5, 3))
-
+    # first
     weights1[1, 0] = - 0.822695035460993 / 2.0
     weights1[1, 1] = - 0.0141843971631206
     weights1[1, 2] = 0.00709219858156028
-
+    # second
     weights1[2, 0] = 0.230496453900709 / 2.0
     weights1[2, 1] = 0.0212765957446808
     weights1[2, 2] = - 0.00443262411347518
-
+    # third
     weights1[3, 0] = - 0.0567375886524823 / 2.0
     weights1[3, 1] = - 0.0141843971631206
     weights1[3, 2] = 0.
@@ -86,6 +86,7 @@ def compute_derivatives_bound(data, list_patchs):
     """
     # initializations :
     derivatives = []
+    PRo1sdE =1.
 
     for npat in list_patchs:
 
