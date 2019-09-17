@@ -22,9 +22,9 @@ list_patchs = get_patches(geo)
 func_init = initialize_distribution(which_f,
                                     center_x=dist_center_x,
                                     center_y=dist_center_y)
-print "=> distribution function initialized"
-print "____________________________________"
-print ""
+print("=> distribution function initialized")
+print("____________________________________")
+print("")
 # *****************************************
 
 #-------------------------------------------

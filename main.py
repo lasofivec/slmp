@@ -82,12 +82,12 @@ for tstep in range(1,nstep+1) :
 
         # Some control test
         if np.size(np.where(np.abs(znp1[npat]) > 10**5)) > 0:
-            print "Gigantic value !! in Pat ", npat
+            print("Gigantic value !! in Pat ", npat)
             import sys
             sys.exit("Error !!")
 
         if np.isnan(znp1[npat]).any() :
-            print "NaN value found !!!! in Pat ", npat
+            print("NaN value found !!!! in Pat ", npat)
             import sys
             sys.exit("Error !!")
 
@@ -113,10 +113,10 @@ for tstep in range(1,nstep+1) :
         list_maxval.append(list_errs[3])
         list_mass.append(list_errs[4])
         # Printing some results
-        print '= =========== TSTEP = ', tstep, "/", nstep, ' =========== ='
+        print('= =========== TSTEP = ', tstep, "/", nstep, ' =========== =')
         maxerr = np.max(list_errs[0])
         npat_maxerr = list_errs[0].index(np.max(list_errs[0]))
-        print " --> For npat =", npat_maxerr, " maximum err l_inf =", maxerr
+        print(" --> For npat =", npat_maxerr, " maximum err l_inf =", maxerr)
 
 
 # -------------------------------------------

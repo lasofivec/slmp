@@ -45,7 +45,7 @@ def plot_nrb_dens(zn, show = False, save = True, tstep = nstep) :
         nzeros = ""
         for i in range(len(str(nstep))-len(str(tstep))) :
             nzeros = nzeros + "0"
-        print "... saving numerical density for t = ", tstep
+        print("... saving numerical density for t = ", tstep)
         pl.savefig("results/results_figures/Density_T_eq_" + nzeros
                    + str(tstep) + ".eps", format='eps', dpi=1000,
                    facecolor='w', edgecolor='none')
@@ -98,8 +98,8 @@ def comp_err_time(dx, dy, list_zi, list_errs, \
         if (show) :
             diff = list_zi[npat]-z
             diff_res = np.amax(np.abs(diff))
-            print " * Erreur (L_inf) patch ", npat, " = ", err_inf
-            print " * Erreur (L_2)   patch ", npat, " = ", err_l2
+            print(" * Erreur (L_inf) patch ", npat, " = ", err_inf)
+            print(" * Erreur (L_2)   patch ", npat, " = ", err_l2)
 
         if (plot) :
             pl.contourf(X_mat[npat], Y_mat[npat], z, levels = levels,
@@ -114,7 +114,7 @@ def comp_err_time(dx, dy, list_zi, list_errs, \
         pl.ylabel('$y$')
         pl.axis('image')
         if (save) :
-            print "... saving analytical value for t = ", tstep
+            print("... saving analytical value for t = ", tstep)
             pl.savefig("results/results_figures/exact_values/exact_density_t"
                        +tstep+".eps", format='eps', dpi=1000,
                        facecolor='w', edgecolor='none')

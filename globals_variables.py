@@ -41,7 +41,7 @@ if len(argv) > 1:
     scriptname, filename = argv
     filename = filename[:-3]
     filename = filename.split('/')[-1]
-    print "Reading the inputfile...", filename
+    print("Reading the inputfile...", filename)
     exec('from '+filename+' import *')
 #................................................
 
@@ -66,11 +66,11 @@ name_deriv = "Method to compute Hermite slopes : Cubic spline approximation"
 #-------------------
 # data printing
 #-------------------
-print ""
-print " **", name_advec, " **"
-print " **", name_deriv, " **"
-print " NPTS1, NPTS2 =", NPTS1, NPTS2
-print " dt = ", dt
+print("")
+print(" **", name_advec, " **")
+print(" **", name_deriv, " **")
+print(" NPTS1, NPTS2 =", NPTS1, NPTS2)
+print(" dt = ", dt)
 
 #--------------------
 # plotting data
@@ -96,7 +96,7 @@ elif which_f == "GAUSSIAN_DISTRIBUTION":
     comap = 'plasma'
     func_formula=r"$f(x,y) = \exp(-\frac{1}{2\sigma^2}((x-x_c)^2 + (y-y_c)^2))$,"+"\n" +r" where $x_c =$"+str(dist_center_x)+r" $y_c =$"+str(dist_center_y)+r" and $\sigma = $"+str(sig)
 else:
-    print "Please define the proper values for vmin and vmax"
+    print("Please define the proper values for vmin and vmax")
     import sys
     sys.error("Error: No defined plot_val_max nor plot_val_min")
 

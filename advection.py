@@ -13,11 +13,11 @@ if (which_advec == 0) :
     #    for a scalar advection :
     advec[0] = advec_dir1
     advec[1] = advec_dir2
-    print " Constant advection coefficients: "
+    print(" Constant advection coefficients: ")
     for ipat in range(0, npatchs):
-        print "     For patch", ipat, " advection vector: ", advec[:, ipat, 0, 0]
-    print "___________________________________"
-    print ""
+        print("     For patch", ipat, " advection vector: ", advec[:, ipat, 0, 0])
+    print("___________________________________")
+    print("")
 if (which_advec == 1) :
     #    for a centered circular motion advection : ########
     advec = [-2.*np.pi*Y_mat, 2.*np.pi*X_mat]

@@ -52,15 +52,15 @@ def get_patches(geo):
         list_p.append(nrb.degree)
         list_n.append(nrb.shape)
 
-    print "list p:", list_p
-    print "list n:", list_n
+    print("list p:", list_p)
+    print("list n:", list_n)
     p = list_p[0][0]
     n = list_n[0][0]
-    print(" n = "+str(n)+" \n p = "+str(p))
+    print((" n = "+str(n)+" \n p = "+str(p)))
 
     npatchs = geo.npatchs
     list_patchs = list(range(0, npatchs))
-    print(" Num of patchs : " + str(npatchs))
+    print((" Num of patchs : " + str(npatchs)))
     print("")
 
     lpi_ordregl = (p,p)
