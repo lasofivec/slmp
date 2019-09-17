@@ -52,7 +52,7 @@ for npat in list_patchs :
     # python has an UF for very small values of x,y at exp(x,y) :
     z[np.where(abs(z) < 10**-9)] = 0.
     # Computing jacobian values
-    jac[npat,0,:,:] = D[1, :,:, 0]
-    jac[npat,1,:,:] = D[2, :,:, 0]
-    jac[npat,2,:,:] = D[1, :,:, 1]
-    jac[npat,3,:,:] = D[2, :,:, 1]
+    jac[npat,0] = D[1, :,:, 0]
+    jac[npat,1] = D[2, :,:, 0]
+    jac[npat,2] = D[1, :,:, 1]
+    jac[npat,3] = D[2, :,:, 1]
