@@ -3,41 +3,41 @@ def get_geometry(domain):
     Args:
       domain(str) : type of domain to open."""
     if (domain == 0) :
-        ls_domain = "../domains/2squares_inv.xml"
+        ls_domain = "domains/2squares_inv.xml"
         import caid.cad_geometry as cg
         geo = cg.cad_geometry(ls_domain)
     elif (domain == 1) :
-        ls_domain = "../domains/disk_100100.xml"
+        ls_domain = "domains/disk_100100.xml"
         import caid.cad_geometry as cg
         geo = cg.cad_geometry(ls_domain)
         # from caid.cad_geometry import circle
         # geo = circle()
     elif (domain == 2) :
-        ls_domain = "../domains/disk_5mp_n64x64_p3x3.xml"
+        ls_domain = "domains/disk_5mp_n64x64_p3x3.xml"
         import caid.cad_geometry as cg
         geo = cg.cad_geometry(ls_domain)
     elif (domain == 3) :
-        ls_domain = "../domains/pinched_disk_5mp_eps09.xml"
+        ls_domain = "domains/pinched_disk_5mp_eps09.xml"
         import caid.cad_geometry as cg
         geo = cg.cad_geometry(ls_domain)
     elif (domain == 4) :
-        ls_domain = "../domains/4squares.xml"
+        ls_domain = "domains/4squares.xml"
         import caid.cad_geometry as cg
         geo = cg.cad_geometry(ls_domain)
     elif (domain == 5) :
-        ls_domain = "../domains/annulus.xml"
+        ls_domain = "domains/annulus.xml"
         import caid.cad_geometry as cg
         geo = cg.cad_geometry(ls_domain)
     elif (domain == 6) :
-        ls_domain = "../domains/2squares_C0.xml"
+        ls_domain = "domains/2squares_C0.xml"
         import caid.cad_geometry as cg
         geo = cg.cad_geometry(ls_domain)
     elif (domain == 7) :
-        ls_domain = "../domains/1square.xml"
+        ls_domain = "domains/1square.xml"
         import caid.cad_geometry as cg
         geo = cg.cad_geometry(ls_domain)
     elif (domain == 8) :
-        ls_domain = "../domains/quart_annulus_1mp.xml"
+        ls_domain = "domains/quart_annulus_1mp.xml"
         import caid.cad_geometry as cg
         geo = cg.cad_geometry(ls_domain)
     else:
