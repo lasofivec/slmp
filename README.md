@@ -1,16 +1,12 @@
 Requirements:
 ============
 
-  * python (< 3.)
+  * python (>= 3.)
   * numpy
   * scipy
-  * prettyplotlib
   * matplotlib
   * igakit (See https://bitbucket.org/dalcinl/igakit)
   * caid (See https://github.com/ratnania/caid)
-  * You will also need to execute the following command:
-    	$ cp thesisstyle.mplstyle ~/.matplotlib/stylelib/
-    (you might need to create this path)
 
 To execute main program:
 ====
