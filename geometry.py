@@ -12,8 +12,14 @@ from distribution_functions import initialize_distribution
 
 # Getting the geometry:
 NPTS    = [NPTS1, NPTS2]
+print("-------------------------------")
 geo     = get_geometry(domain)
+print(" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+print("type geo =", type(geo))
+print(geo)
+print(domain)
 npatchs = geo.npatchs
+print("npatches =", npatchs)
 list_patchs = get_patches(geo)
 
 # *****************************************

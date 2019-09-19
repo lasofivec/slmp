@@ -1,7 +1,5 @@
 import pylab as pl
 import matplotlib as mpl
-import prettyplotlib as ppl
-from prettyplotlib import brewer2mpl
 import numpy as np
 import os, sys
 from globals_variables import *
@@ -11,7 +9,7 @@ from geometry import geo, X_mat, Y_mat, func_init
 
 # Plotting variables:
 levels = np.linspace(PLOT_VAL_MIN, PLOT_VAL_MAX, 25)
-pl.style.use('thesisstyle')
+# pl.style.use('thesisstyle')
 
 
 def plot_nrb_dens(zn, show = False, save = True, tstep = nstep) :
@@ -176,7 +174,6 @@ def plot_errors(list_errs):
     fig, ax = pl.subplots(1)
     pl.title("$L_2$ and $L_\infty$ errors over time")
     pl.xlabel("Time")
-    #    ppl.legend(ax, loc='upper left')
     pl.plot(list_tmp, list_emt_inf, '-')
     pl.plot(list_tmp, list_emt_l2, '--')
     pl.legend(["$L^\infty$ error", "$L^2$ error"], loc='best')
@@ -215,7 +212,6 @@ def plot_errors(list_errs):
              + r"$\sum_{i,j}f(t,x_i,y_j) - \sum_{i,j}f(0,x_i,y_j)$"
              + "\n")
     pl.xlabel("Time")
-    #    ppl.legend(ax, loc='upper left')
     pl.plot(list_tmp, list_emt_mass, '-')
     # *** Saving image :
     fig.savefig("results/results_figures/Mass_over_time.eps", \
