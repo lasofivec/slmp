@@ -1,0 +1,8 @@
+import derivatives as der
+
+def test_compute_weights2d():
+    h = [0.1, 1., 2.]
+    for th in h:
+        res = comp
+        assert(res[
+        assert(res[1,0]

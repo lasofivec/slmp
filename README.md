@@ -2,6 +2,7 @@ Requirements:
 ============
 
   * python (>= 3.)
+  * h5py
   * numpy
   * scipy
   * matplotlib
